@@ -16,6 +16,10 @@ def build_creator_profile(
             growth_stage="early",
             performance_ratio=1.0,
             competition_tolerance="low",
+            strengths=[],
+            weaknesses=[],
+            interests=[],
+            recent_videos=[],
         )
 
     subs = input_profile.subscriber_count
@@ -56,6 +60,10 @@ def build_creator_profile(
         growth_stage=stage,
         performance_ratio=performance_ratio,
         competition_tolerance=tolerance,
+        strengths=input_profile.strengths or [],
+        weaknesses=input_profile.weaknesses or [],
+        interests=input_profile.interests or [],
+        recent_videos=input_profile.recent_videos or [],
     )
 
 

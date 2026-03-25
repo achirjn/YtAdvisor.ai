@@ -3,25 +3,34 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 
+class PastVideo(BaseModel):
+    title: str
+    views: int
+    format: str
+
+
 class CreatorProfile(BaseModel):
-    channel_id: Optional[str]
-    niche: Optional[str]
-    subscriber_count: Optional[int]
-    avg_views: Optional[int]
-    recent_videos: Optional[List[str]] = Field(default_factory=list)
+    channel_id: Optional[str] = None
+    niche: Optional[str] = None
+    subscriber_count: Optional[int] = None
+    avg_views: Optional[int] = None
+    strengths: Optional[List[str]] = Field(default_factory=list)
+    weaknesses: Optional[List[str]] = Field(default_factory=list)
+    interests: Optional[List[str]] = Field(default_factory=list)
+    recent_videos: Optional[List[PastVideo]] = Field(default_factory=list)
 
 
 class DerivedCreatorProfile(BaseModel):
-    mode: str  # "generic" or "personalized"
-
-    # raw
+    mode: str
     subscriber_count: Optional[int]
     avg_views: Optional[int]
     niche: Optional[str]
-
-    # derived
-    channel_size_bucket: str  # "small", "growing", "large"
-    growth_stage: str  # "early", "mid", "established"
-    performance_ratio: float  # avg_views / subs (safe division)
-    competition_tolerance: str  # low / medium / high
+    channel_size_bucket: str
+    growth_stage: str
+    performance_ratio: float
+    competition_tolerance: str
+    strengths: List[str]
+    weaknesses: List[str]
+    interests: List[str]
+    recent_videos: List[PastVideo]
 

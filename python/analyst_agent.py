@@ -32,6 +32,7 @@ def run_analyst_agent(
     is_monopoly: bool = False,
     is_personality: bool = False,
     is_fragmented: bool = False,
+    content_mode: str = "SEARCH",
 ) -> dict:
     print("[analyst] starting...")
     t0 = time.monotonic()
@@ -51,24 +52,6 @@ def run_analyst_agent(
         competition_tolerance = creator_profile.competition_tolerance
         performance_ratio = creator_profile.performance_ratio
 
-    system_prompt = (
-        "You are a YouTube market analyst.\n\n"
-        "Your job is to:\n"
-        "* Understand the competitive landscape\n"
-        "* Identify real opportunities\n"
-        "* Detect risks\n\n"
-        "STRICT RULES:\n"
-        "* Do NOT generate titles or creative ideas\n"
-        "* Do NOT give generic advice\n"
-        "* Base your reasoning ONLY on provided data\n"
-        "* Be sharp, specific, and slightly brutal\n"
-        "* market_truth must be 1-2 lines max and MUST include:\n"
-        "  - who dominates\n"
-        "  - what works\n"
-        "  - what fails\n"
-        "* content_gaps must be specific and actionable (no generic placeholders)\n"
-    )
-
     # Add transcript sample if available
     transcript_sample = features.get("transcript_sample", "")
 
@@ -82,65 +65,103 @@ def run_analyst_agent(
     entry_barrier = market_summary.get("entry_barrier")
     competition_level = market_summary.get("competition_level")
 
-    user_prompt = (
-        f"Idea:\n{idea}\n\n"
-        "Market Signals:\n"
-        f"* Breakout Summary: {breakout_summary}\n"
-        f"* Creator Distribution: {creator_distribution}\n"
-        f"* Title Patterns: {title_patterns}\n"
-        f"* Content Clusters: {content_clusters}\n"
-        f"* Freshness: {freshness}\n"
-        f"* Velocity Metrics: {velocity_metrics}\n"
-        f"* Consistency: {features.get('consistency')}\n"
-        f"* Market Dynamics: {features.get('market_dynamics')}\n"
-        f"* Anomaly Signals: MONOPOLY={is_monopoly}, PERSONALITY_DRIVEN={is_personality}, FRAGMENTED={is_fragmented}\n\n"
-        "TRANSCRIPT ANALYSIS:\n"
-        f"- Hook Style: {features.get('transcript_analysis', {}).get('transcript_summary', {}).get('hook_style', 'Unknown')}\n"
-        f"- Pacing: {features.get('transcript_analysis', {}).get('transcript_summary', {}).get('pacing', 'Unknown')}\n"
-        f"- Tone: {features.get('transcript_analysis', {}).get('transcript_summary', {}).get('tone', 'Unknown')}\n\n"
-        "CRITICAL SIGNALS:\n"
-        f"- Entry Barrier: {entry_barrier}\n"
-        f"- Competition Level: {competition_level}\n\n"
-        "IMPORTANT SIGNAL INTERPRETATION RULES:\n"
-        "CRITICAL SIGNALS MUST BE CONSIDERED:\n"
-        "- Entry Barrier: HIGH = extremely difficult for new creators\n"
-        "- Competition Level: HIGH = dominated by established players\n"
-        "\n"
-        "DETAILED RULES:\n"
-        "- If Market Summary.entry_barrier = 'HIGH' -> assume difficult for small creators.\n"
-        "- If creator_distribution.small_creator_success_rate = 'LOW' -> assume low breakout chances.\n"
-        "- If Freshness.trend_status = 'STALE' -> assume the trend is declining.\n"
-        "- If breakout_summary.distribution.viral is low (e.g., 0-1) -> assume low upside.\n"
-        "- If velocity_metrics.avg_views_per_day < 1000 -> assume low engagement potential.\n"
-        "- If velocity_metrics.top_vs_avg_ratio > 10 -> assume winner-takes-all market.\n"
-        "- If velocity_metrics.avg_title_length > 60 -> assume clickbait-heavy niche.\n"
-        "- If consistency.consistency = 'HIGH' -> stable market, predictable performance\n"
-        "- If consistency.consistency = 'LOW' -> volatile market, high risk/reward\n"
-        "- If market_dynamics = 'WINNER_TAKES_ALL' -> dominated by top players\n"
-        "- If market_dynamics = 'VOLATILE' -> unpredictable performance swings\n"
-        "- If market_dynamics = 'STABLE' -> predictable performance patterns\n"
-        "- If transcript_analysis.hook_style = 'sensational' → high engagement but low retention\n"
-        "- If transcript_analysis.pacing = 'fast' → appeals to shorter attention spans\n"
-        "- If transcript_analysis.tone = 'direct_address' → builds stronger connection\n"
-        "- If MONOPOLY=True -> market dominated by few players, entry is extremely hard.\n"
-        "- If PERSONALITY_DRIVEN=True -> success depends on personal brand, not content quality.\n"
-        "- If FRAGMENTED=True -> many small players, opportunity exists if you differentiate.\n"
-        "Use these signals STRICTLY in your reasoning.\n\n"
-        "Creator Context:\n"
-        f"* Mode: {creator_mode}\n"
-        f"* Subscribers: {subscriber_count}\n"
-        f"* Channel Size: {channel_size_bucket}\n"
-        f"* Growth Stage: {growth_stage}\n"
-        f"* Performance Ratio: {performance_ratio}\n"
-        f"* Competition Tolerance: {competition_tolerance}\n"
-        "\n"
-        "CREATOR PROFILE ADJUSTMENT RULES:\n"
-        "- If performance_ratio is low (<0.1) → prioritize safer, proven ideas\n"
-        "- If growth_stage is 'early' → avoid high competition niches\n"
-        "- If channel_size_bucket is 'small' → focus on differentiation, not volume\n"
-        "- If competition_tolerance is 'low' → avoid saturated markets\n"
-        "Apply these rules to your analysis."
-    )
+    if creator_mode == "generic":
+        system_prompt = (
+            "You are a YouTube market analyst evaluating ideas for a general audience.\n\n"
+            "Your job is to:\n"
+            "* Understand the competitive landscape\n"
+            "* Identify real opportunities and risks\n\n"
+            "STRICT RULES:\n"
+            "* Do NOT generate titles or creative ideas\n"
+            "* Do NOT give generic advice\n"
+            "* Base your reasoning ONLY on provided data\n"
+            "* market_truth must be 1-2 lines max\n"
+            "* content_gaps must be specific\n\n"
+            "STRICT FORMATTING RULE: Do not write essays. Use very simple words. Maximum 15 words per sentence. "
+            "Never use academic jargon. Give direct, punchy, actionable facts."
+        )
+        user_prompt = (
+            f"Idea:\n{idea}\n\n"
+            "Market Signals:\n"
+            f"* Breakout Summary: {breakout_summary}\n"
+            f"* Creator Distribution: {creator_distribution}\n"
+            f"* Title Patterns: {title_patterns}\n"
+            f"* Content Clusters: {content_clusters}\n"
+            f"* Freshness: {freshness}\n"
+            f"* Velocity Metrics: {velocity_metrics}\n"
+            f"* Consistency: {features.get('consistency')}\n"
+            f"* Market Dynamics: {features.get('market_dynamics')}\n"
+            f"* Anomaly Signals: MONOPOLY={is_monopoly}, PERSONALITY={is_personality}, FRAGMENTED={is_fragmented}\n\n"
+            "TRANSCRIPT ANALYSIS:\n"
+            f"- Hook Style: {features.get('transcript_analysis', {}).get('transcript_summary', {}).get('hook_style')}\n"
+            f"- Pacing: {features.get('transcript_analysis', {}).get('transcript_summary', {}).get('pacing')}\n"
+            f"- Tone: {features.get('transcript_analysis', {}).get('transcript_summary', {}).get('tone')}\n\n"
+            "CRITICAL SIGNALS:\n"
+            f"- Entry Barrier: {entry_barrier}\n"
+            f"- Competition Level: {competition_level}\n\n"
+            "Evaluate this idea purely on general market data."
+        )
+    else:
+        # Dynamically build context to handle empty frontend fields safely
+        context_parts = [
+            f"* Channel Size: {channel_size_bucket} ({subscriber_count} subs)",
+            f"* Growth Stage: {growth_stage}",
+            f"* Performance Ratio: {performance_ratio}",
+            f"* Competition Tolerance: {competition_tolerance}"
+        ]
+        if creator_profile and creator_profile.strengths:
+            context_parts.append(f"* Strengths: {', '.join(creator_profile.strengths)}")
+        if creator_profile and creator_profile.weaknesses:
+            context_parts.append(f"* Weaknesses: {', '.join(creator_profile.weaknesses)}")
+        if creator_profile and creator_profile.interests:
+            context_parts.append(f"* Interests: {', '.join(creator_profile.interests)}")
+        if creator_profile and creator_profile.recent_videos:
+            past_vids_str = json.dumps([v.model_dump() for v in creator_profile.recent_videos])
+            context_parts.append(f"* Past Video Performance: {past_vids_str}")
+            
+        dynamic_creator_context = "\n".join(context_parts)
+
+        system_prompt = (
+            "You are a private YouTube market analyst for a specific creator.\n\n"
+            "Your job is to evaluate if the market is safe or hostile for THIS creator's size, based on their explicit skills, past videos, and the content mode.\n\n"
+            "CRITICAL STRATEGY RULES BASED ON CONTENT MODE:\n"
+            "1. If content_mode is 'SEARCH' (Tutorials, Tech, Finance): Competition is bad. Niche down. Find the specific gap big channels ignored. Solve a specific problem.\n"
+            "2. If content_mode is 'BROWSE' (Vlogs, Food, Challenges, Entertainment): Competition is GOOD. It means high demand. Do NOT niche down. Instead, maximize the emotional hook, pacing, and visual curiosity. Beat them with better angles, not smaller niches.\n\n"
+            "STRICT RULES:\n"
+            "* Base your reasoning on the creator's channel size and competition tolerance.\n"
+            "* market_truth must be 1-2 lines max\n"
+            "* content_gaps must be specific\n\n"
+            "STRICT FORMATTING RULE: Do not write essays. Use very simple words. Maximum 15 words per sentence. "
+            "Never use academic jargon. Give direct, punchy, actionable facts."
+        )
+        user_prompt = (
+            f"Idea:\n{idea}\n"
+            f"Content Mode: {content_mode}\n\n"
+            "Market Signals:\n"
+            f"* Breakout Summary: {breakout_summary}\n"
+            f"* Creator Distribution: {creator_distribution}\n"
+            f"* Title Patterns: {title_patterns}\n"
+            f"* Content Clusters: {content_clusters}\n"
+            f"* Freshness: {freshness}\n"
+            f"* Velocity Metrics: {velocity_metrics}\n"
+            f"* Consistency: {features.get('consistency')}\n"
+            f"* Market Dynamics: {features.get('market_dynamics')}\n"
+            f"* Anomaly Signals: MONOPOLY={is_monopoly}, PERSONALITY={is_personality}, FRAGMENTED={is_fragmented}\n\n"
+            "TRANSCRIPT ANALYSIS:\n"
+            f"- Hook Style: {features.get('transcript_analysis', {}).get('transcript_summary', {}).get('hook_style')}\n"
+            f"- Pacing: {features.get('transcript_analysis', {}).get('transcript_summary', {}).get('pacing')}\n"
+            f"- Tone: {features.get('transcript_analysis', {}).get('transcript_summary', {}).get('tone')}\n\n"
+            "CRITICAL SIGNALS:\n"
+            f"- Entry Barrier: {entry_barrier}\n"
+            f"- Competition Level: {competition_level}\n\n"
+            "Creator Context:\n"
+            f"{dynamic_creator_context}\n\n"
+            "CREATOR PROFILE ADJUSTMENT RULES:\n"
+            "- If performance_ratio is low (<0.1) → prioritize safer ideas\n"
+            "- If channel_size_bucket is 'small' → focus on differentiation\n"
+            "- If competition_tolerance is 'low' → avoid saturated markets\n"
+            "Apply these rules to your analysis."
+        )
 
     model = genai.GenerativeModel(
         llm_service._MODEL_NAME,  # reuse existing model name

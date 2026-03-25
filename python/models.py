@@ -7,6 +7,7 @@ from creator_profile import CreatorProfile
 
 class IdeaRequest(BaseModel):
     idea: str
+    content_mode: str = "SEARCH"  # "SEARCH" or "BROWSE"
     creator_profile: Optional[CreatorProfile] = None
 
 

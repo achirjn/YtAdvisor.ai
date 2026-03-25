@@ -102,6 +102,7 @@ def analyze(request: IdeaRequest) -> OptimizerAgentOutput:
             is_monopoly=is_monopoly,
             is_personality=is_personality,
             is_fragmented=is_fragmented,
+            content_mode=request.content_mode,
         )
         print({"stage": "main", "action": "analyst_done", "elapsed_s": round(time.monotonic() - t_analyst, 3)})
 
@@ -110,6 +111,7 @@ def analyze(request: IdeaRequest) -> OptimizerAgentOutput:
             request.idea,
             analyst_output,
             derived_profile,
+            content_mode=request.content_mode,
         )
         print({"stage": "main", "action": "strategist_done", "elapsed_s": round(time.monotonic() - t_strategist, 3)})
         # Stored for now; do not merge into the strategy response yet.
@@ -120,6 +122,7 @@ def analyze(request: IdeaRequest) -> OptimizerAgentOutput:
             analyst_output,
             strategist_output,
             derived_profile,
+            content_mode=request.content_mode,
         )
 
         print({

@@ -53,6 +53,7 @@ def run_optimizer_agent(
     analyst_output: dict,
     strategist_output: dict,
     creator_profile: Optional[DerivedCreatorProfile],
+    content_mode: str = "SEARCH",
 ) -> dict:
     print("[optimizer] starting...")
     t0 = time.monotonic()
@@ -62,6 +63,7 @@ def run_optimizer_agent(
     competition_tolerance = "low"
     growth_stage = "early"
     performance_ratio = 0.0
+    subscriber_count = 0
 
     if creator_profile is not None:
         creator_mode = creator_profile.mode
@@ -69,96 +71,63 @@ def run_optimizer_agent(
         competition_tolerance = creator_profile.competition_tolerance
         growth_stage = creator_profile.growth_stage
         performance_ratio = creator_profile.performance_ratio
+        subscriber_count = creator_profile.subscriber_count or 0
 
-    system_prompt = (
-        "You are a YouTube execution expert.\n\n"
-        "Your job is to:\n"
-        "* Convert strategy into clear actions\n"
-        "* Decide if the idea is worth pursuing\n"
-        "* Make output practical and decisive\n\n"
-        "STRICT RULES:\n"
-        "* Be direct and decisive\n"
-        "* Avoid generic advice\n"
-        "* Focus on execution, not theory\n\n"
-        "DECISION AUTHORITY RULE:\n"
-        "* You MUST make a clear decision in final_verdict.decision: GO / MODIFY / AVOID.\n"
-        "* Do NOT be neutral or vague.\n"
-        "* Do NOT hedge with uncertainty.\n"
-        "* If you are unsure, choose MODIFY and explain why.\n\n"
-        "TITLE QUALITY RULE:\n"
-        "* title must create curiosity OR a strong benefit.\n"
-        "* title must NOT be generic.\n"
-        "* title must NOT just repeat the dominant pattern from the niche.\n\n"
-        "HOOK QUALITY RULE:\n"
-        "* hook must create tension in the first sentence.\n"
-        "* hook must NOT be explanatory.\n"
-        "* hook must NOT start with 'In this video...'.\n\n"
-        "AVOID RULE:\n"
-        "* avoid must include at least 1 common mistake in this niche.\n"
-        "* avoid must include at least 1 mistake that is specific to THIS idea.\n\n"
-        "PERFORMANCE OUTLOOK RULE:\n"
-        "* performance_outlook.reason must explain causally why potential is high/low.\n"
-        "* Reference competition level and observed patterns from the analyst/strategist context.\n\n"
-        "EXECUTIVE SUMMARY RULE:\n"
-        "* executive_summary must be exactly 1-2 punchy sentences summarizing the verdict and the required action.\n"
-        "* If decision is GO: Frame it as 'Here is your opportunity and exactly how to take it.'\n"
-        "* If decision is MODIFY: Frame it as 'Strong idea, wrong angle. Here is the specific shift that changes everything.'\n"
-        "* If decision is AVOID: Frame it as 'We strongly advise against this idea due to market conditions. However, if you are absolutely forced to make this video, here is your only survival strategy.'\n\n"
-        "AVOID VERDICT RULE:\n"
-        "* If your decision is AVOID, you MUST STILL generate a complete and brilliant execution_plan.\n"
-        "* Frame the execution plan as a 'Risk Mitigation' or 'Survival' strategy.\n"
-        "* The execution plan must represent the absolute best-case scenario for a fundamentally bad idea.\n\n"
-        "KEY INSIGHT:\n"
-        "* key_insight must be exactly 1 line and feel like a premium, memorable summary.\n\n"
-        "WHY THIS WILL WORK:\n"
-        "* Provide a clear causal chain:\n"
-        "  gap → differentiation → CTR → retention → growth\n"
-        "* Must NOT be generic\n\n"
-        "SELF-CHECK QUALITY VALIDATION:\n"
-        "Before finalizing your output, you MUST perform this self-check:\n"
-        "- If title feels generic → rewrite it to be more specific and compelling\n"
-        "- If hook lacks tension → rewrite it to create immediate curiosity\n"
-        "- If advice is obvious → rewrite it to provide non-obvious insights\n"
-        "- If thumbnail_concept is vague → rewrite it to be visually specific\n"
-        "- If video_structure is generic → rewrite it to include unique elements\n"
-        "- If next_moves feel generic → rewrite them to be actionable and specific\n"
-        "Only after passing this self-check should you finalize your response.\n\n"
-        "GAP ENFORCEMENT RULE:\n"
-        "* If strategist_output.gap_exploited is NOT empty or 'Unknown', you MUST use it.\n"
-        "* Execution MUST clearly reflect this gap.\n"
-        "* If the gap is empty, focus on radical differentiation instead.\n\n"
-        "ANALYST OVERRIDE RULE:\n"
-        "* If analyst_output indicates:\n"
-        "  - low demand\n"
-        "  - high competition\n"
-        "  - high risk\n"
-        "→ you MUST reflect that in final_verdict\n"
-        "* You cannot contradict analyst unless explicitly justified."
-    )
+    if creator_mode == "generic":
+        system_prompt = (
+            "You are a fast, decisive YouTube execution expert for the general market.\n\n"
+            "Your job is to convert strategy into a clear action plan.\n\n"
+            "DECISION AUTHORITY RULE:\n"
+            "* You MUST make a clear decision in final_verdict.decision: GO / MODIFY / AVOID.\n"
+            "* title must create curiosity and NOT be generic.\n"
+            "* hook must create tension in the first sentence.\n"
+            "* executive_summary must be exactly 1-2 punchy sentences.\n\n"
+            "STRICT FORMATTING RULE: Do not write essays. Use simple words. Maximum 15 words per sentence. "
+            "Never use academic jargon. Give direct, punchy, actionable facts. Keep titles under 60 characters."
+        )
+        user_prompt = (
+            f"Idea:\n{idea}\n\n"
+            "Analyst Output:\n"
+            f"{json.dumps(analyst_output, indent=2)}\n\n"
+            "Strategist Output:\n"
+            f"{json.dumps(strategist_output, indent=2)}\n\n"
+            "Evaluate the execution plan for a general audience."
+        )
+    else:
+        context_parts = [
+            f"* Subscriber Count: {subscriber_count}",
+            f"* Performance Ratio: {performance_ratio}"
+        ]
+        if creator_profile.strengths:
+            context_parts.append(f"* Strengths: {', '.join(creator_profile.strengths)}")
+        if creator_profile.weaknesses:
+            context_parts.append(f"* Weaknesses: {', '.join(creator_profile.weaknesses)}")
+        if creator_profile.recent_videos:
+            past_vids_str = json.dumps([v.model_dump() for v in creator_profile.recent_videos])
+            context_parts.append(f"* Past Video Performance: {past_vids_str}")
+            
+        dynamic_creator_context = "\n".join(context_parts)
 
-    user_prompt = (
-        f"Idea:\n{idea}\n\n"
-        "Analyst Output:\n"
-        f"{json.dumps(analyst_output, indent=2)}\n\n"
-        "Strategist Output:\n"
-        f"{json.dumps(strategist_output, indent=2)}\n\n"
-        "Creator Context:\n"
-        f"* Mode: {creator_mode}\n"
-        f"* Channel Size: {channel_size_bucket}\n"
-        f"* Growth Stage: {growth_stage}\n"
-        f"* Performance Ratio: {performance_ratio}\n"
-        f"* Competition Tolerance: {competition_tolerance}\n"
-        f"* Analyst Reasoning: {analyst_output.get('reasoning')}\n"
-        f"* Strategist Reasoning: {strategist_output.get('reasoning')}\n"
-        f"* Gap To Exploit: {strategist_output.get('gap_exploited')}\n"
-        "\n"
-        "CREATOR PROFILE ADJUSTMENT RULES:\n"
-        "- If performance_ratio is low (<0.1) → prioritize safer, proven ideas\n"
-        "- If growth_stage is 'early' → avoid high competition niches\n"
-        "- If channel_size_bucket is 'small' → focus on differentiation, not volume\n"
-        "- If competition_tolerance is 'low' → avoid saturated markets\n"
-        "Apply these rules to your execution plan."
-    )
+        system_prompt = (
+            "You are an elite, ruthless YouTube growth hacker.\n\n"
+            "Your goal is MAXIMAL UPSIDE. Safe videos get zero views. You must find the smartest way for this specific creator to take a big swing and win.\n\n"
+            "THE VIRAL RULES:\n"
+            "1. IDEA PRESERVATION: If the core idea has high viral or CTR potential, DO NOT kill it. Keep the core hook, but mutate the execution to fit the creator's skills.\n"
+            "2. SMART RISK: Do not tell them to play it safe. Tell them how to take a smart risk. If they lack budget, use their strengths (like editing or scripting) to create the same viral feeling.\n"
+            "3. RAW SUBS INTELLIGENCE: Look at their raw subscriber count. If they have 15 subs, focus on wild differentiation to break out. If they have 25,000 subs, focus on leveraging their existing authority. Never call a creator 'small'.\n"
+            "4. FAMILIAR + TWIST: Do not force people into tiny, boring niches just to avoid competition. Take a massive, popular topic and add a weird, hyper-specific twist based on their profile.\n\n"
+            "STRICT FORMATTING RULE: Do not write essays. Use simple words. Maximum 15 words per sentence. Give direct, punchy, actionable facts."
+        )
+        
+        user_prompt = (
+            f"Idea:\n{idea}\n"
+            f"Content Mode: {content_mode}\n\n"
+            "Analyst Output:\n"
+            f"{json.dumps(analyst_output, indent=2)}\n\n"
+            "Creator Context (CRITICAL):\n"
+            f"{dynamic_creator_context}\n\n"
+            "Build a high-upside execution plan. Do not play it safe. Maximize their chance to blow up."
+        )
 
     model = genai.GenerativeModel(
         llm_service._MODEL_NAME,

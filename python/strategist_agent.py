@@ -26,6 +26,7 @@ def run_strategist_agent(
     idea: str,
     analyst_output: dict,
     creator_profile: Optional[DerivedCreatorProfile],
+    content_mode: str = "SEARCH",
 ) -> dict:
     print("[strategist] starting...")
     t0 = time.monotonic()
@@ -43,65 +44,77 @@ def run_strategist_agent(
         growth_stage = creator_profile.growth_stage
         performance_ratio = creator_profile.performance_ratio
 
-    system_prompt = (
-        "You are a YouTube content strategist.\n\n"
-        "Your job is to:\n"
-        "* Turn market insights into winning video ideas\n"
-        "* Create strong positioning and angles\n"
-        "* Exploit gaps and weaknesses\n\n"
-        "STRICT RULES:\n"
-        "* Do NOT repeat analysis\n"
-        "* Do NOT give generic advice\n"
-        "* Do NOT re-analyze the market.\n"
-        "* Focus on DIFFERENTIATION.\n"
-        "* Your strategy MUST be based on contrast.\n"
-        "* Identify what most creators are doing.\n"
-        "* Then deliberately propose a different angle.\n"
-        "* If your idea sounds similar to existing content, it is WRONG.\n\n"
-        "MANDATORY: CONTENT GAP EXPLOITATION\n"
-        "* Your strategy MUST directly exploit at least one content gap from the analysis.\n"
-        "* If you do not use a content gap, your strategy is INVALID.\n"
-        "* Explicitly reference which content gap you are exploiting.\n"
-        "* Your differentiation_strategy must explain HOW you exploit the gap.\n"
-        "* Your idea_upgrade must be a direct response to the identified gap.\n\n"
-        "MANDATORY GAP TRACEABILITY:\n"
-        "* You MUST explicitly state which content gap you are exploiting.\n"
-        "* gap_exploited must be a direct reference to one of the provided content_gaps.\n"
-        "* differentiation_strategy MUST explain how this gap is exploited.\n"
-        "* If no gap is used, your output is INVALID.\n\n"
-        "RULES FOR OUTPUT FIELDS:\n"
-        "* idea_upgrade must be a FULL improved video concept (not an explanation).\n"
-        "* next_video_ideas must follow a progression (beginner → deeper → viral).\n"
-        "* next_video_ideas must NOT be random; each idea must be clearly different in angle.\n"
-        "* Provide reasoning as a short explanation why this strategy works.\n"
-        "* Keep everything specific, sharp, and strategic.\n"
-    )
+    if creator_mode == "generic":
+        system_prompt = (
+            "You are a general YouTube content strategist.\n\n"
+            "Your job is to turn market insights into winning video angles for a general audience.\n\n"
+            "STRICT RULES:\n"
+            "* Your strategy MUST exploit at least one content gap from the analysis.\n"
+            "* If you do not use a content gap, your strategy is INVALID.\n"
+            "* next_video_ideas must follow a progression (beginner → deeper → viral).\n\n"
+            "STRICT FORMATTING RULE: Do not write essays. Use simple words. Maximum 15 words per sentence. "
+            "No academic jargon. Direct, punchy facts."
+        )
+        user_prompt = (
+            "Idea:\n"
+            f"{idea}\n\n"
+            "Analyst Insights:\n"
+            f"* Market Truth: {analyst_output.get('market_truth')}\n"
+            f"* Dominant Force: {analyst_output.get('dominant_force')}\n"
+            f"* Opportunity: {analyst_output.get('opportunity')}\n"
+            f"* Risk: {analyst_output.get('risk')}\n"
+            f"* Content Gaps: {analyst_output.get('content_gaps')}\n"
+            f"* Can Win: {analyst_output.get('can_small_creator_win')}\n"
+            f"* Reasoning: {analyst_output.get('reasoning')}\n"
+        )
+    else:
+        # Dynamically build context to handle empty frontend fields safely
+        context_parts = [
+            f"* Channel Size: {channel_size_bucket}",
+            f"* Growth Stage: {growth_stage}",
+            f"* Performance Ratio: {performance_ratio}",
+            f"* Competition Tolerance: {competition_tolerance}"
+        ]
+        if creator_profile and creator_profile.strengths:
+            context_parts.append(f"* Strengths: {', '.join(creator_profile.strengths)}")
+        if creator_profile and creator_profile.weaknesses:
+            context_parts.append(f"* Weaknesses: {', '.join(creator_profile.weaknesses)}")
+        if creator_profile and creator_profile.interests:
+            context_parts.append(f"* Interests: {', '.join(creator_profile.interests)}")
+        if creator_profile and creator_profile.recent_videos:
+            past_vids_str = json.dumps([v.model_dump() for v in creator_profile.recent_videos])
+            context_parts.append(f"* Past Video Performance: {past_vids_str}")
+            
+        dynamic_creator_context = "\n".join(context_parts)
 
-    user_prompt = (
-        "Idea:\n"
-        f"{idea}\n\n"
-        "Analyst Insights:\n"
-        f"* Market Truth: {analyst_output.get('market_truth')}\n"
-        f"* Dominant Force: {analyst_output.get('dominant_force')}\n"
-        f"* Opportunity: {analyst_output.get('opportunity')}\n"
-        f"* Risk: {analyst_output.get('risk')}\n"
-        f"* Content Gaps: {analyst_output.get('content_gaps')}\n"
-        f"* Can Win: {analyst_output.get('can_small_creator_win')}\n"
-        f"* Reasoning: {analyst_output.get('reasoning')}\n\n"
-        "Creator Context:\n"
-        f"* Mode: {creator_mode}\n"
-        f"* Channel Size: {channel_size_bucket}\n"
-        f"* Growth Stage: {growth_stage}\n"
-        f"* Performance Ratio: {performance_ratio}\n"
-        f"* Competition Tolerance: {competition_tolerance}\n"
-        "\n"
-        "CREATOR PROFILE ADJUSTMENT RULES:\n"
-        "- If performance_ratio is low (<0.1) → prioritize safer, proven ideas\n"
-        "- If growth_stage is 'early' → avoid high competition niches\n"
-        "- If channel_size_bucket is 'small' → focus on differentiation, not volume\n"
-        "- If competition_tolerance is 'low' → avoid saturated markets\n"
-        "Apply these rules to your strategy."
-    )
+        system_prompt = (
+            "You are a private YouTube strategist for a specific channel.\n\n"
+            "Your job is to figure out how THIS specific channel can pivot to beat larger competitors based on their explicit skills, past videos, and the content mode.\n\n"
+            "CRITICAL STRATEGY RULES BASED ON CONTENT MODE:\n"
+            "1. If content_mode is 'SEARCH' (Tutorials, Tech, Finance): Competition is bad. Niche down. Find the specific gap big channels ignored. Solve a specific problem.\n"
+            "2. If content_mode is 'BROWSE' (Vlogs, Food, Challenges, Entertainment): Competition is GOOD. It means high demand. Do NOT niche down. Instead, maximize the emotional hook, pacing, and visual curiosity. Beat them with better angles, not smaller niches.\n\n"
+            "STRICT RULES:\n"
+            "* Your strategy MUST exploit at least one content gap from the analysis.\n"
+            "* Focus heavily on differentiation based on their channel size.\n"
+            "* next_video_ideas must be safe and scalable for their current growth stage.\n\n"
+            "STRICT FORMATTING RULE: Do not write essays. Use simple words. Maximum 15 words per sentence. "
+            "No academic jargon. Direct, punchy facts."
+        )
+        user_prompt = (
+            f"Idea:\n{idea}\n"
+            f"Content Mode: {content_mode}\n\n"
+            "Analyst Insights:\n"
+            f"* Market Truth: {analyst_output.get('market_truth')}\n"
+            f"* Dominant Force: {analyst_output.get('dominant_force')}\n"
+            f"* Opportunity: {analyst_output.get('opportunity')}\n"
+            f"* Risk: {analyst_output.get('risk')}\n"
+            f"* Content Gaps: {analyst_output.get('content_gaps')}\n"
+            f"* Can Win: {analyst_output.get('can_small_creator_win')}\n"
+            f"* Reasoning: {analyst_output.get('reasoning')}\n\n"
+            "Creator Context:\n"
+            f"{dynamic_creator_context}\n\n"
+            "Apply these creator constraints to your strategy."
+        )
 
     model = genai.GenerativeModel(
         llm_service._MODEL_NAME,
