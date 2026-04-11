@@ -39,11 +39,7 @@ const ExecutionDashboard = () => {
         {/* Section Header */}
       <header className="flex items-end justify-between border-b border-[#E5E2E1]/20 pb-4">
         <div className="space-y-1">
-          <span className="text-[#970100] font-headline font-black text-xs uppercase tracking-[.3em]">Module 04</span>
-          <h1 className="text-5xl font-headline font-extrabold tracking-tighter text-[#FFFFFF]">EXECUTION BLUEPRINT</h1>
-        </div>
-        <div className="bg-[#970100]/10 px-4 py-1 border-l-4 border-[#970100] hidden md:block">
-          <span className="text-[#970100] font-headline font-black text-[10px] uppercase tracking-widest">Tactical Protocol Active</span>
+          <h1 className="text-5xl font-headline font-extrabold tracking-tighter text-[#FFFFFF]">EXECUTION GUIDE</h1>
         </div>
       </header>
 
@@ -52,13 +48,12 @@ const ExecutionDashboard = () => {
         <section className="space-y-4">
           <div className="flex items-center gap-3">
             <span className="material-symbols-outlined text-[#E5E2E1]">anchor</span>
-            <h2 className="text-lg font-headline font-bold text-[#FFFFFF] tracking-tight uppercase">The Hook</h2>
+            <h2 className="text-lg font-headline font-bold text-[#FFFFFF] tracking-tight uppercase">Hook Strategy</h2>
           </div>
           <div className="bg-[#0e0e0e] border border-[#E5E2E1]/10 p-10 relative group overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
             <div className="absolute top-0 left-0 w-1 h-full bg-[#970100]"></div>
             <div className="flex justify-between items-start mb-8">
-              <span className="text-[10px] font-black text-[#970100] uppercase tracking-widest">EXACT HOOK SCRIPT</span>
-              <span className="text-[10px] text-[#E5E2E1]/30 font-mono">ID: HK-092-ALPHA</span>
+              <span className="text-[10px] font-black text-[#970100] uppercase tracking-widest">HOOK SCRIPT</span>
             </div>
             <div className="space-y-6">
               <p className="text-2xl md:text-4xl font-mono font-medium leading-[1.4] text-[#E5E2E1]/90 text-center tracking-tight">

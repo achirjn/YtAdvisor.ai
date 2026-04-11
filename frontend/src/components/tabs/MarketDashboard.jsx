@@ -28,7 +28,7 @@ const MarketDashboard = () => {
       {/* Tab Side Nav (Inner) */}
       <div className="w-1 flex-shrink-0 border-r border-[#1C1B1B] relative">
         <div className="sticky top-24 rotate-90 origin-left translate-x-4 whitespace-nowrap">
-          <span className="text-[0.625rem] font-bold tracking-[0.4em] text-[#FF0000] uppercase font-headline">SECTION: MARKET</span>
+          <span className="text-[0.625rem] font-bold tracking-[0.4em] text-[#FF0000] uppercase font-headline">MARKET ANALYSIS</span>
         </div>
       </div>
 
@@ -36,8 +36,8 @@ const MarketDashboard = () => {
       <div className="flex-1 space-y-12">
         {/* Header Section */}
         <section>
-          <span className="text-[#FF0000] font-headline font-bold tracking-[0.25em] text-[0.65rem] uppercase">INTELLIGENCE FEED</span>
-          <h2 className="text-4xl md:text-5xl font-black font-headline text-[#E5E2E1] mt-2 tracking-tighter uppercase">MARKET INTELLIGENCE</h2>
+          <span className="text-[#FF0000] font-headline font-bold tracking-[0.25em] text-[0.65rem] uppercase">ANALYSIS FEED</span>
+          <h2 className="text-4xl md:text-5xl font-black font-headline text-[#E5E2E1] mt-2 tracking-tighter uppercase">MARKET ANALYSIS</h2>
         </section>
 
         {/* MARKET TRUTH */}
@@ -53,7 +53,7 @@ const MarketDashboard = () => {
               </p>
               <div className="mt-8 flex items-center gap-3">
                 <span className="w-8 h-[1px] bg-[#FF0000]"></span>
-                <span className="text-[0.6875rem] font-headline font-black text-[#FF0000] tracking-widest uppercase">Verified Signal Alpha</span>
+                <span className="text-[0.6875rem] font-headline font-black text-[#FF0000] tracking-widest uppercase">CORE MARKET FACTOR</span>
               </div>
             </div>
           </section>
@@ -65,7 +65,7 @@ const MarketDashboard = () => {
             {dominantForce && (
               <div className="bg-[#1C1B1B] p-8 rounded-sm border-l-2 border-[#1C1B1B] flex flex-col justify-between min-h-[180px]">
                 <div className="space-y-1 mb-4">
-                  <span className="text-[#FF0000] font-headline font-black text-[0.6875rem] tracking-widest uppercase">DOMINANT FORCE</span>
+                  <span className="text-[#FF0000] font-headline font-black text-[0.6875rem] tracking-widest uppercase">PRIMARY DRIVER</span>
                 </div>
                 <p className="text-xl font-bold text-[#E5E2E1] leading-tight font-headline">{dominantForce}</p>
               </div>
@@ -125,7 +125,7 @@ const MarketDashboard = () => {
                 <span className={`text-[0.65rem] font-headline font-bold uppercase tracking-widest ${contentArchetype.includes('CORE') || contentArchetype.includes('AUDIENCE') ? 'text-blue-300' : 'text-blue-700'}`}>CORE AUDIENCE</span>
               </div>
             </div>
-            <p className="text-2xl font-headline font-black text-[#E5E2E1] leading-tight mb-3 uppercase tracking-tight">Archetype Matrix: {contentArchetype}</p>
+            <p className="text-2xl font-headline font-black text-[#E5E2E1] leading-tight mb-3 uppercase tracking-tight">CONTENT FORMAT: {contentArchetype}</p>
             <p className="text-[0.6875rem] font-mono text-[#E5E2E1]/40 uppercase tracking-[0.2em]">Format recommended by AI engine based on current market parameters.</p>
           </section>
         )}

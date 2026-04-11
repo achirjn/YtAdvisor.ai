@@ -8,7 +8,8 @@ const CreativeDashboard = () => {
 
   const creative = apiPayload.creative || {};
 
-  const exactHookScript = apiPayload.execution?.exact_hook_script;
+  const suggestedTitle = apiPayload.creative?.suggested_title;
+  const titleAlternatives = creative.title_alternatives || [];
   const titlePsychology = creative.title_psychology;
   const thumbnailPrompt = creative.thumbnail_contrast_rule || creative.thumbnail_concept;
 
@@ -16,21 +17,20 @@ const CreativeDashboard = () => {
     <div className="p-10 max-w-7xl mx-auto w-full space-y-12 pb-24 relative">
       {/* SECTION HEADER */}
       <div className="flex items-center gap-4">
-        <span className="px-2 py-1 bg-[#970100]/20 text-[#970100] text-[10px] font-black tracking-widest uppercase rounded-sm border border-[#970100]/30">MODULE 03</span>
-        <h2 className="text-[#970100] font-headline font-bold text-sm uppercase tracking-[0.3em]">CREATIVE PACKAGE</h2>
+        <h2 className="text-[#970100] font-headline font-bold text-sm uppercase tracking-[0.3em]">CREATIVE STRATEGY</h2>
         <div className="h-px flex-1 bg-gradient-to-r from-[#970100]/30 to-transparent"></div>
       </div>
 
-      {/* EXACT HOOK SCRIPT & PSYCHOLOGY CARD */}
-      {(exactHookScript || titlePsychology) && (
+      {/* SUGGESTED TITLE & PSYCHOLOGY CARD */}
+      {(suggestedTitle || titlePsychology) && (
         <section className="relative group mt-8">
           <div className="absolute -inset-0.5 bg-gradient-to-r from-[#970100] to-transparent opacity-20 rounded-sm blur transition duration-1000 group-hover:opacity-40"></div>
           <div className="relative bg-[#0e0e0e] border border-[#970100]/50 p-12 text-center flex flex-col items-center justify-center min-h-[320px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7)]">
-            {exactHookScript && (
+            {suggestedTitle && (
               <>
-                <span className="text-[#970100] font-label text-[9px] font-black uppercase tracking-[0.4em] mb-6">EXACT HOOK SCRIPT</span>
-                <h3 className="text-3xl md:text-5xl font-headline font-extrabold text-[#e5e2e1] leading-tight tracking-tighter max-w-4xl uppercase">
-                   "{exactHookScript}"
+                <span className="text-[#970100] font-label text-[9px] font-black uppercase tracking-[0.4em] mb-6">SUGGESTED TITLE</span>
+                <h3 className="text-3xl md:text-5xl font-headline font-extrabold text-[#e5e2e1] leading-tight tracking-tighter max-w-4xl">
+                   "{suggestedTitle}"
                 </h3>
               </>
             )}
@@ -51,23 +51,38 @@ const CreativeDashboard = () => {
         </section>
       )}
 
+      {/* ALTERNATIVE ANGLES */}
+      {titleAlternatives.length > 0 && (
+        <section className="space-y-6">
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-[#970100]">alt_route</span>
+            <span className="text-[#e5e2e1] font-headline font-bold uppercase tracking-widest text-xs">Alternative Angles</span>
+          </div>
+          <div className="flex flex-col gap-4">
+            {titleAlternatives.map((alt, idx) => (
+              <div key={idx} className="bg-[#1c1b1b]/50 border border-[#603e39]/15 p-6 rounded-sm flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-[#970100]/30 transition-all group">
+                <p className="text-[#e5e2e1] font-body text-lg tracking-tight">"{alt.title}"</p>
+                <span className="px-3 py-1 bg-[#970100]/10 border border-[#970100]/30 text-[#970100] text-[9px] font-black uppercase tracking-widest rounded-sm shrink-0 group-hover:bg-[#970100]/20 transition-colors">
+                  {alt.psychology_tag}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* THUMBNAIL BRIEF */}
       {thumbnailPrompt && (
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <section className="flex flex-col gap-12">
           {/* CONCEPT CARD */}
           <div className="flex flex-col gap-6">
             <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-[#970100]">brush</span>
               <span className="text-[#e5e2e1] font-headline font-bold uppercase tracking-widest text-xs">THUMBNAIL CONCEPT</span>
             </div>
-            <div className="aspect-video bg-[#2a2a2a] rounded-sm overflow-hidden border border-[#603e39]/15 relative group">
-              {/* Note: I kept the abstract reference image from the design since we don't have a generated image yet */}
-              <img alt="Thumbnail Base Graphic" className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHWC00zj1mcftkNqWSiBIf0JK_MXGcMirN5aEJKyJwCtZGySF9kBT0qzbe-3S5ZzEgQsDeU67gz-nKwuay7hpivHyQEMIACdrryZYhcRwBXFhry6icU0k-hZnoEVjLEGhvytjwjB4LxOwwXLddbZHD8g7ZNONBzp_aD6RwoAigRS2_luttQXjSRCPnWllYivkIsP57LrI0vvC3dVVCdgoEuXzxL9sQKcK5M5PxYgnr-0LdwYs9t5Cod6jGASgph505pCSYl5qPagA"/>
-              <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-transparent to-transparent"></div>
-              <div className="absolute bottom-6 left-6 max-w-md pr-4">
-                <span className="text-[10px] font-bold text-[#ffb4a8] tracking-widest uppercase mb-1 block">VISUAL HOOK PROMPT</span>
-                <p className="text-sm font-body text-[#e5e2e1]/80 line-clamp-3">{thumbnailPrompt}</p>
-              </div>
+            <div className="bg-[#1c1b1b] border border-[#603e39]/15 p-8 rounded-sm space-y-4">
+              <span className="text-[10px] font-bold text-[#ffb4a8] tracking-widest uppercase block">VISUAL HOOK PROMPT</span>
+              <p className="text-sm font-body text-[#e5e2e1]/80 leading-relaxed">{thumbnailPrompt}</p>
             </div>
           </div>
 
@@ -77,7 +92,7 @@ const CreativeDashboard = () => {
               <span className="material-symbols-outlined text-[#970100]">contrast</span>
               <span className="text-[#e5e2e1] font-headline font-bold uppercase tracking-widest text-xs">CONTRAST RULE</span>
             </div>
-            <div className="flex-1 bg-[#1c1b1b] border border-[#603e39]/15 p-8 rounded-sm">
+            <div className="bg-[#1c1b1b] border border-[#603e39]/15 p-8 rounded-sm">
               <ul className="space-y-6">
                 <li className="flex items-start gap-4">
                   <div className="w-6 h-6 rounded-full bg-[#970100]/10 border border-[#970100] flex items-center justify-center shrink-0">
@@ -94,7 +109,7 @@ const CreativeDashboard = () => {
                   </div>
                   <div>
                     <p className="text-[#e5e2e1] font-bold text-sm uppercase font-headline">Prompt Enforcement</p>
-                    <p className="text-[#e5e2e1]/40 text-xs mt-1 leading-relaxed line-clamp-3">Base execution rules directly from prompt: {thumbnailPrompt}</p>
+                    <p className="text-[#e5e2e1]/40 text-xs mt-1 leading-relaxed">Base execution rules directly from prompt: {thumbnailPrompt}</p>
                   </div>
                 </li>
               </ul>

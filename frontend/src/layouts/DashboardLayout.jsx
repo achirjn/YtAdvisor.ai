@@ -36,8 +36,8 @@ const DashboardLayout = () => {
         {/* Brand Header */}
         <div className="mb-6 px-2">
           <Link to="/" className="block">
-            <h1 className="text-xl font-black text-[#E5E2E1] tracking-tighter uppercase font-headline">MISSION CONTROL</h1>
-            <p className="text-[0.6875rem] font-bold uppercase tracking-wider text-[#FF0000] font-headline">DIMENZIQ TACTICAL</p>
+            <h1 className="text-xl font-black text-[#E5E2E1] tracking-tighter uppercase font-headline">DASHBOARD</h1>
+            <p className="text-[0.6875rem] font-bold uppercase tracking-wider text-[#FF0000] font-headline">DIMENZIQ ANALYTICS</p>
           </Link>
         </div>
 
@@ -46,7 +46,7 @@ const DashboardLayout = () => {
           {/* Final Verdict */}
           {finalVerdict && (
             <div className="space-y-0.5">
-              <span className="text-[0.625rem] font-bold uppercase tracking-[0.2em] text-[#E5E2E1]/40 font-headline">FINAL VERDICT</span>
+              <span className="text-[0.625rem] font-bold uppercase tracking-[0.2em] text-[#E5E2E1]/40 font-headline">VERDICT</span>
               <div className="text-5xl font-black text-[#00FF41] font-headline tracking-tighter">{finalVerdict}</div>
             </div>
           )}
@@ -83,7 +83,7 @@ const DashboardLayout = () => {
 
             {/* Creator Verdict */}
             <div className="space-y-1">
-              <span className="text-[0.625rem] font-bold uppercase tracking-[0.2em] text-[#E5E2E1]/40 font-headline">SMALL CREATOR VERDICT</span>
+              <span className="text-[0.625rem] font-bold uppercase tracking-[0.2em] text-[#E5E2E1]/40 font-headline">SMALL CHANNEL VERDICT</span>
               <div>
                 <span className={`inline-block px-2 py-0.5 border text-[0.6875rem] font-black uppercase tracking-widest rounded-sm ${smallCreatorVerdict === 'HARD' || smallCreatorVerdict === 'AVOID' ? 'bg-[#FF0000]/10 border-[#FF0000]/30 text-[#FF0000]' : 'bg-[#00FF41]/10 border-[#00FF41]/30 text-[#00FF41]'}`}>
                   {smallCreatorVerdict || 'AWAITING DATA'}
@@ -99,7 +99,7 @@ const DashboardLayout = () => {
             <div className="bg-[#FF0000]/10 border border-[#FF0000]/20 p-3 rounded-sm flex items-start gap-3">
               <span className="material-symbols-outlined text-[#FF0000] text-lg animate-[pulse_2s_ease-in-out_infinite]" style={{fontVariationSettings: "'FILL' 1"}}>error</span>
               <div className="space-y-0.5">
-                <p className="text-[0.625rem] font-bold text-[#FF0000] uppercase tracking-wider">TACTICAL ALERT</p>
+                <p className="text-[0.625rem] font-bold text-[#FF0000] uppercase tracking-wider">SYSTEM RECOMMENDATION</p>
                 <p className="text-[0.75rem] font-medium leading-tight text-[#E5E2E1]">Shorts test recommended</p>
               </div>
             </div>
@@ -137,31 +137,17 @@ const DashboardLayout = () => {
            <footer className="w-full border-t border-[#1C1B1B] py-8 bg-[#0A0A0A] mt-auto">
              <div className="px-8 flex flex-col md:flex-row justify-between items-center gap-8">
                <div className="flex flex-col gap-1">
-                 <span className="text-[#FF0000] font-black tracking-tighter text-sm font-headline uppercase">STRAT-INTEL DASHBOARD</span>
-                 <span className="text-[9px] font-mono text-[#E5E2E1]/30 uppercase tracking-widest">Version Alpha-01.82 | Deployment Unit 402</span>
+                 <span className="text-[#FF0000] font-black tracking-tighter text-sm font-headline uppercase">DIMENZIQ ANALYSIS</span>
+                 <span className="text-[9px] font-mono text-[#E5E2E1]/30 uppercase tracking-widest">Version Alpha-01.82</span>
                </div>
                <div className="flex gap-8">
-                  <Link className="text-[10px] font-mono text-[#E5E2E1]/40 uppercase tracking-[0.2em] hover:text-[#FF0000] transition-colors" to="/">Terminal</Link>
-                  <Link className="text-[10px] font-mono text-[#E5E2E1]/40 uppercase tracking-[0.2em] hover:text-[#FF0000] transition-colors" to="/analyze">Input Config</Link>
+                  <Link className="text-[10px] font-mono text-[#E5E2E1]/40 uppercase tracking-[0.2em] hover:text-[#FF0000] transition-colors" to="/">Main</Link>
+                  <Link className="text-[10px] font-mono text-[#E5E2E1]/40 uppercase tracking-[0.2em] hover:text-[#FF0000] transition-colors" to="/analyze">Configure Input</Link>
                </div>
              </div>
            </footer>
         </div>
 
-        {/* Floating Technical Indicator (Top level over main content) */}
-        <div className="absolute bottom-8 right-8 flex flex-col items-end pointer-events-none z-50">
-          <div className="flex items-center gap-4 bg-[#1C1B1B]/80 backdrop-blur-md px-4 py-2 rounded-sm border border-[#FF0000]/20 mb-2">
-            <span className="text-[0.6rem] font-black text-[#FF0000] tracking-[0.3em] uppercase">SYSTEM STATUS: OPTIMAL</span>
-            <div className="flex gap-1">
-              <div className="w-1 h-1 bg-[#00FF41] rounded-full"></div>
-              <div class="w-1 h-1 bg-[#00FF41] rounded-full"></div>
-              <div class="w-1 h-1 bg-[#00FF41] rounded-full animate-[ping_1.5s_cubic-bezier(0,0,0.2,1)_infinite]"></div>
-            </div>
-          </div>
-          <div className="text-[0.6rem] font-mono text-[#E5E2E1]/20 tracking-tighter uppercase">
-              LATENCY: 12ms // BUFFER: 100% // SOURCE: D-INTELLIGENCE_CORE_V4
-          </div>
-        </div>
 
       </div>
     </div>

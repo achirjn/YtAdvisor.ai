@@ -33,14 +33,14 @@ const VerdictDashboard = () => {
           <section className="space-y-6">
             <div className="flex items-center gap-4">
               <span className="material-symbols-outlined text-[#FF0000]" style={{fontVariationSettings: "'FILL' 1"}}>bolt</span>
-              <h2 className="font-headline font-black text-xl tracking-tight uppercase">MISSION REFRAME</h2>
+              <h2 className="font-headline font-black text-xl tracking-tight uppercase">KEY ANALYSIS</h2>
             </div>
             
             <div className="bg-[#201F1F]/40 backdrop-blur-[20px] border border-[#603E39]/15 p-10 rounded-sm relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-64 h-64 bg-[#FF0000]/5 rounded-full -mr-20 -mt-20 blur-3xl transition-all group-hover:bg-[#FF0000]/10"></div>
               <div className="relative z-10 space-y-4">
-                <span className="text-[#FF0000] text-[0.6875rem] font-black tracking-[0.2em] uppercase font-headline">IDEA UPGRADE</span>
-                <h3 className="text-2xl md:text-3xl font-black font-headline text-[#E5E2E1] leading-tight max-w-4xl uppercase">{ideaUpgrade || 'REFRAME FOR MARKET VIABILITY.'}</h3>
+                <span className="text-[#FF0000] text-[0.6875rem] font-black tracking-[0.2em] uppercase font-headline">CORE REFINEMENT</span>
+                <h3 className="text-2xl md:text-3xl font-black font-headline text-[#E5E2E1] leading-tight max-w-4xl">{ideaUpgrade || 'Refining for market viability.'}</h3>
                 
                 {marketTruth && (
                   <div className="pt-4 max-w-2xl">
@@ -61,7 +61,7 @@ const VerdictDashboard = () => {
             <div className="bg-[#1C1B1B] p-8 rounded-sm border-l-2 border-[#FF0000] flex flex-col justify-between h-56">
               <div className="space-y-1">
                 <span className="material-symbols-outlined text-[#FF0000]">speed</span>
-                <h4 className="text-[0.6875rem] font-bold text-[#FF0000] tracking-widest uppercase font-mono">PERFORMANCE BENCHMARK</h4>
+                <h4 className="text-[0.6875rem] font-bold text-[#FF0000] tracking-widest uppercase font-mono">BENCHMARK</h4>
               </div>
               <div className="space-y-4">
                 <p className="text-lg font-bold text-[#E5E2E1] leading-snug">{benchmark}</p>
@@ -88,7 +88,7 @@ const VerdictDashboard = () => {
           <section className="space-y-6">
             <div className="flex items-center gap-4">
               <span className="material-symbols-outlined text-[#FF0000]" style={{fontVariationSettings: "'FILL' 1"}}>shield_with_heart</span>
-              <h2 className="font-headline font-black text-xl tracking-tight uppercase">CHANNEL INTEL</h2>
+              <h2 className="font-headline font-black text-xl tracking-tight uppercase">CHANNEL ANALYSIS</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[#1C1B1B] rounded-sm overflow-hidden border border-[#1C1B1B]">

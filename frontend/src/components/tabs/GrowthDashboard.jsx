@@ -16,8 +16,7 @@ const GrowthDashboard = () => {
        <div className="p-12 space-y-12 max-w-7xl mx-auto w-full">
          
          <div className="flex items-center gap-3">
-           <div className="w-2 h-2 bg-[#c0392b] rounded-full animate-pulse shadow-[0_0_8px_rgba(192,57,43,0.6)]"></div>
-           <h2 className="text-[#c0392b] font-mono text-xs font-bold uppercase tracking-[0.2em]">GROWTH ENGINE</h2>
+           <h2 className="text-[#c0392b] font-mono text-xs font-bold uppercase tracking-[0.2em]">GROWTH STRATEGY</h2>
          </div>
 
          {/* POST PUBLISH STRATEGY (Replaces static Pinned Comment) */}
@@ -26,7 +25,7 @@ const GrowthDashboard = () => {
                <div className="flex justify-between items-end">
                  <div className="flex items-center gap-2 text-[#c0392b]">
                    <span className="material-symbols-outlined text-lg" style={{fontVariationSettings: "'FILL' 1"}}>push_pin</span>
-                   <span className="font-mono text-xs font-bold uppercase">POST PUBLISH PROTOCOL</span>
+                   <span className="font-mono text-xs font-bold uppercase">POST-PUBLISH STRATEGY</span>
                  </div>
                </div>
                <div className="relative group bg-[#1c1b1b] p-6 rounded-sm border-l-2 border-[#c0392b]/50 hover:bg-[#201f1f] transition-all shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]">
@@ -51,7 +50,7 @@ const GrowthDashboard = () => {
             <section className="bg-[#1c1b1b] p-8 md:p-12 rounded-sm border-l-4 border-[#c0392b] mb-12 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]">
                <div className="flex items-center gap-2 text-[#c0392b] mb-6">
                  <span className="material-symbols-outlined text-lg">radar</span>
-                 <span className="font-mono text-xs font-bold uppercase tracking-widest">PERFORMANCE OUTLOOK (30-DAY)</span>
+                 <span className="font-mono text-xs font-bold uppercase tracking-widest">30-DAY OUTLOOK</span>
                </div>
                <p className="text-[#e5e2e1] font-headline text-2xl md:text-3xl font-medium leading-tight max-w-4xl tracking-tight">
                    "{performanceOutlook.trim()}"

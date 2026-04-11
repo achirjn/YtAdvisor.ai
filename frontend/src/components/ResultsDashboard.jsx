@@ -93,11 +93,16 @@ const ResultsDashboard = () => {
               </div>
             </div>
 
-            {/* Thumbnail Strategy */}
-            <div className="bg-[#0A0A0A] p-10 flex flex-col justify-between">
+            {/* Thumbnail Concept */}
+            <div className="bg-[#0A0A0A] p-10 flex flex-col">
               <div className="space-y-6">
-                <label className="text-[10px] font-label font-bold uppercase tracking-widest text-[#a5a2a1] block">Thumbnail Strategy</label>
-                <div className="bg-white/5 p-8 border border-white/5">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-[#FF0000] text-xl" data-icon="brush">brush</span>
+                  <label className="text-[10px] font-label font-bold uppercase tracking-widest text-[#a5a2a1] block">Thumbnail Concept</label>
+                </div>
+                
+                <div className="bg-white/5 p-8 border border-white/5 space-y-4">
+                  <label className="text-[10px] font-label font-bold uppercase tracking-widest text-[#FF0000]/70 block">Visual Hook Prompt</label>
                   <p className="text-sm text-[#a5a2a1] leading-relaxed">
                     {thumbnailStrategy.split('Matte Charcoal (#0E0E0E)').map((part1, index1, array1) => (
                       <span key={index1}>
