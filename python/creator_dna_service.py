@@ -5,7 +5,7 @@ import traceback
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-import google.generativeai as genai
+import llm_client
 from pydantic import BaseModel
 
 
@@ -102,7 +102,6 @@ def _generate_dna_with_gemini(
     channel_title: str,
     comment_texts: List[str],
     existing_summary: Optional[str],
-    model_name: str,
 ) -> Optional[_DNAGenerationOutput]:
     """
     Calls Gemini to generate or update the creator DNA summary.
@@ -119,31 +118,13 @@ def _generate_dna_with_gemini(
 
     user_prompt = _build_generation_prompt(channel_title, comment_texts, existing_summary)
 
-    model = genai.GenerativeModel(
-        model_name,
-        system_instruction=system_prompt,
-    )
-
     try:
-        response = model.generate_content(
-            user_prompt,
-            generation_config=genai.GenerationConfig(
-                temperature=0.3,
-                response_mime_type="application/json",
-                response_schema=_DNAGenerationOutput,
-            ),
-        )
-        raw = response.text or "{}"
-
-        try:
-            return _DNAGenerationOutput.model_validate_json(raw)
-        except Exception:
-            start = raw.find("{")
-            end = raw.rfind("}")
-            if start != -1 and end != -1:
-                return _DNAGenerationOutput.model_validate_json(raw[start : end + 1])
-            return None
-
+        structured_llm = llm_client.get_structured_llm(_DNAGenerationOutput, temperature=0.3)
+        result = structured_llm.invoke([
+            ("system", system_prompt),
+            ("human", user_prompt),
+        ])
+        return result
     except Exception as e:
         print(f"[dna_service] Gemini call failed: {e}")
         traceback.print_exc()
@@ -155,7 +136,6 @@ def create_dna_snapshot(
     channel_title: str,
     comment_texts: List[str],
     videos_processed: int,
-    model_name: str = "gemini-2.5-flash",
 ) -> DNAUpdateResult:
     """
     Creates a brand-new CreatorDNASnapshot from a list of comment texts.
@@ -178,7 +158,6 @@ def create_dna_snapshot(
         channel_title=channel_title,
         comment_texts=comment_texts,
         existing_summary=None,
-        model_name=model_name,
     )
 
     if result is None:
@@ -217,7 +196,6 @@ def update_dna_snapshot(
     existing_snapshot: CreatorDNASnapshot,
     new_comment_texts: List[str],
     additional_videos_processed: int,
-    model_name: str = "gemini-2.5-flash",
 ) -> DNAUpdateResult:
     """
     Enriches an existing CreatorDNASnapshot with new comment data.
@@ -244,7 +222,6 @@ def update_dna_snapshot(
         channel_title=existing_snapshot.channel_title,
         comment_texts=new_comment_texts,
         existing_summary=existing_snapshot.dna_summary,
-        model_name=model_name,
     )
 
     if result is None:
@@ -370,8 +347,6 @@ if __name__ == "__main__":
     if not gemini_key:
         print("ERROR: GEMINI_API_KEY not found in .env")
         sys.exit(1)
-
-    genai.configure(api_key=gemini_key)
 
     test_comments = [
         "Could you show how to add authentication to this?",

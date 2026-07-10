@@ -3,10 +3,10 @@ import time
 import traceback
 from typing import Any, List, Optional
 
-import google.generativeai as genai
 from pydantic import BaseModel
 
 from api_models import AgentContext
+import llm_client
 import llm_service
 
 
@@ -75,43 +75,12 @@ def run_strategist_agent(
             "Your thumbnail_concept must deliberately avoid the dominant pattern described above.\n"
         )
 
-    model = genai.GenerativeModel(
-        llm_service._MODEL_NAME,
-        system_instruction=system_prompt,
-    )
-
     try:
-        response = llm_service.generate_content_with_timeout(
-            model,
-            user_prompt,
-            generation_config=genai.GenerationConfig(
-                temperature=0.7,
-                response_mime_type="application/json",
-                response_schema=StrategistAgentOutput,
-            ),
-            timeout_s=90,
+        structured_llm = llm_client.get_structured_llm(StrategistAgentOutput, temperature=0.7, timeout_s=90)
+        result_obj = structured_llm.invoke(
+            [("system", system_prompt), ("human", user_prompt)]
         )
-    except Exception:
-        traceback.print_exc()
-        result = StrategistAgentOutput(
-            suggested_title="Insufficient data",
-            title_psychology="Insufficient data",
-            title_alternatives=[],
-            thumbnail_concept="Insufficient data",
-            thumbnail_contrast_rule="Insufficient data",
-            thumbnail_text_overlay="",
-            exact_hook_script="Insufficient data",
-            hook_psychology="Insufficient data",
-        ).model_dump()
-        print({"stage": "strategist", "output": result})
-        print(f"[strategist] done in {time.monotonic() - t0:.1f}s")
-        return result
-
-    raw_text = response.text or ""
-
-    try:
-        parsed = llm_service._parse(raw_text, StrategistAgentOutput)
-        result = parsed.model_dump()
+        result = result_obj.model_dump()
     except Exception:
         traceback.print_exc()
         result = StrategistAgentOutput(

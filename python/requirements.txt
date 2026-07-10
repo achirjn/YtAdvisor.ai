@@ -3,3 +3,11 @@ youtube-transcript-api
 python-dotenv
 requests
 yt-dlp==2026.03.17
+langchain-core
+langchain-google-genai
+pydantic
+langgraph
+fastapi
+uvicorn
+langgraph-checkpoint-postgres
+psycopg[pool]

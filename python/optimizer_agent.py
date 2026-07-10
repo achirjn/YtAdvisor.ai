@@ -3,10 +3,10 @@ import time
 import traceback
 from typing import List
 
-import google.generativeai as genai
 from pydantic import BaseModel
 
 from api_models import AgentContext
+import llm_client
 import llm_service
 
 
@@ -93,65 +93,12 @@ def run_optimizer_agent(
         f"{json.dumps(strategist_output, indent=2)}\n"
     )
 
-    model = genai.GenerativeModel(
-        llm_service._MODEL_NAME,
-        system_instruction=system_prompt,
-    )
-
     try:
-        response = llm_service.generate_content_with_timeout(
-            model,
-            user_prompt,
-            generation_config=genai.GenerationConfig(
-                temperature=0.7,
-                response_mime_type="application/json",
-                response_schema=OptimizerAgentOutput,
-            ),
-            timeout_s=90,
+        structured_llm = llm_client.get_structured_llm(OptimizerAgentOutput, temperature=0.7, timeout_s=90)
+        result_obj = structured_llm.invoke(
+            [("system", system_prompt), ("human", user_prompt)]
         )
-    except Exception:
-        traceback.print_exc()
-        result = OptimizerAgentOutput(
-            final_verdict="MODIFY",
-            confidence="LOW",
-            confidence_reason="Analysis failed — retry recommended",
-            idea_upgrade="Insufficient data",
-            market_context="Insufficient data",
-            performance_benchmark="Insufficient data",
-            performance_outlook="Insufficient data",
-            pacing_timeline=["0:00 - Hook - open with the core value immediately"],
-            retention_traps=[
-                RetentionTrapItem(
-                    moment="Insufficient data",
-                    reason="Insufficient data",
-                    fix="Insufficient data",
-                )
-            ],
-            win_conditions=["Insufficient data"],
-            fail_conditions=["Insufficient data"],
-            shorts_test_recommended=True,
-            shorts_test_instruction="",
-            pinned_comment="Insufficient data",
-            community_post_seed="Insufficient data",
-            description_timestamps="Insufficient data",
-            next_video_series=[
-                NextVideoItem(
-                    title="Insufficient data",
-                    strategic_reason="Insufficient data",
-                    priority=1,
-                )
-            ],
-            series_positioning="Insufficient data",
-        ).model_dump()
-        print({"stage": "optimizer", "output": result})
-        print(f"[optimizer] done in {time.monotonic() - t0:.1f}s")
-        return result
-
-    raw_text = response.text or ""
-
-    try:
-        parsed = llm_service._parse(raw_text, OptimizerAgentOutput)
-        result = parsed.model_dump()
+        result = result_obj.model_dump()
     except Exception:
         traceback.print_exc()
         result = OptimizerAgentOutput(

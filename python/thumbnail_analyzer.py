@@ -6,7 +6,15 @@ from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
 
 import requests
-import google.generativeai as genai
+import llm_client
+from pydantic import BaseModel
+
+class ThumbnailVisionOutput(BaseModel):
+    dominant_colors: str
+    composition: str
+    text_overlays: str
+    mood: str
+
 
 
 @dataclass
@@ -50,7 +58,6 @@ def _fetch_image_as_base64(url: str, timeout_s: int = 10) -> Optional[str]:
             )
             return None
         out = base64.b64encode(response.content).decode("utf-8")
-        time.sleep(0.2)
         return out
     except Exception as e:
         print(f"[thumbnails] fetch failed for {url}: {e}")
@@ -60,46 +67,45 @@ def _fetch_image_as_base64(url: str, timeout_s: int = 10) -> Optional[str]:
 def _analyse_single_thumbnail(
     url: str,
     image_b64: str,
-    model_name: str,
 ) -> ThumbnailDescription:
     """
     Calls Gemini vision on one base64 image and parses JSON fields into ThumbnailDescription.
     """
-    try:
-        model = genai.GenerativeModel(model_name)
-        image_part = {
-            "inline_data": {
-                "mime_type": "image/jpeg",
-                "data": image_b64,
+    from langchain_core.messages import HumanMessage
+
+    prompt_text = (
+        "Analyse this YouTube thumbnail image. Respond with ONLY a JSON object "
+        "containing exactly these four string fields:\n"
+        "- dominant_colors: describe the main colors and color scheme in under 15 words\n"
+        "- composition: describe the layout and main visual elements in under 20 words\n"
+        "- text_overlays: list any text visible on the thumbnail exactly as written, "
+        "or 'none' if no text\n"
+        "- mood: describe the emotional tone and style in under 10 words\n"
+        "Do not include any explanation outside the JSON object."
+    )
+
+    message = HumanMessage(
+        content=[
+            {
+                "type": "image_url",
+                "image_url": {"url": f"data:image/jpeg;base64,{image_b64}"}
+            },
+            {
+                "type": "text",
+                "text": prompt_text
             }
-        }
-        text_part = {
-            "text": (
-                "Analyse this YouTube thumbnail image. Respond with ONLY a JSON object "
-                "containing exactly these four string fields:\n"
-                "- dominant_colors: describe the main colors and color scheme in under 15 words\n"
-                "- composition: describe the layout and main visual elements in under 20 words\n"
-                "- text_overlays: list any text visible on the thumbnail exactly as written, "
-                "or 'none' if no text\n"
-                "- mood: describe the emotional tone and style in under 10 words\n"
-                "Do not include any explanation outside the JSON object."
-            )
-        }
-        response = model.generate_content(
-            [image_part, text_part],
-            generation_config=genai.GenerationConfig(
-                temperature=0.1,
-                response_mime_type="application/json",
-            ),
-        )
-        raw = response.text or "{}"
-        data = json.loads(raw)
+        ]
+    )
+
+    try:
+        structured_llm = llm_client.get_structured_llm(ThumbnailVisionOutput, temperature=0.1)
+        res = structured_llm.invoke([message])
         return ThumbnailDescription(
             url=url,
-            dominant_colors=str(data.get("dominant_colors", "Unknown")),
-            composition=str(data.get("composition", "Unknown")),
-            text_overlays=str(data.get("text_overlays", "Unknown")),
-            mood=str(data.get("mood", "Unknown")),
+            dominant_colors=res.dominant_colors,
+            composition=res.composition,
+            text_overlays=res.text_overlays,
+            mood=res.mood,
             fetch_successful=True,
             error="",
         )
@@ -114,8 +120,6 @@ def _analyse_single_thumbnail(
             fetch_successful=False,
             error=str(e),
         )
-    finally:
-        time.sleep(0.5)
 
 
 def _generate_combined_summary(
@@ -194,14 +198,33 @@ def _generate_combined_summary(
     return combined_summary, dominant_pattern, contrast_opportunity
 
 
+def _fetch_and_analyse_single(url: str, idx: int, total: int) -> ThumbnailDescription:
+    print(f"[thumbnails] fetching thumbnail {idx + 1}/{total}: {url[:60]}...")
+    image_b64 = _fetch_image_as_base64(url)
+    if image_b64 is None:
+        return ThumbnailDescription(
+            url=url,
+            dominant_colors="Unknown",
+            composition="Unknown",
+            text_overlays="Unknown",
+            mood="Unknown",
+            fetch_successful=False,
+            error="Image fetch failed",
+        )
+    print(f"[thumbnails] image fetched ({len(image_b64)} b64 chars) — running vision analysis for thumbnail {idx + 1}...")
+    description = _analyse_single_thumbnail(url, image_b64)
+    dc_preview = description.dominant_colors[:40]
+    print(f"[thumbnails] thumbnail {idx + 1} — colors: {dc_preview}, mood: {description.mood}")
+    return description
+
+
 def analyse_thumbnails(
     thumbnail_urls: List[str],
-    model_name: str = "gemini-2.5-flash",
 ) -> ThumbnailAnalysis:
     """
-    Fetches up to 3 thumbnail images and analyses them using Gemini vision.
+    Fetches up to 3 thumbnail images and analyses them concurrently using Gemini vision.
     Returns ThumbnailAnalysis with per-thumbnail descriptions and a combined summary.
-    Falls back gracefully if images cannot be fetched or Gemini call fails.
+    Falls back gracefully if images cannot be fetched or vision call fails.
     """
     if not thumbnail_urls:
         return ThumbnailAnalysis(
@@ -210,40 +233,34 @@ def analyse_thumbnails(
         )
 
     urls_to_analyse = thumbnail_urls[:3]
-    print(f"[thumbnails] analysing {len(urls_to_analyse)} thumbnails...")
+    total = len(urls_to_analyse)
+    print(f"[thumbnails] analysing {total} thumbnails concurrently...")
 
-    descriptions: List[ThumbnailDescription] = []
+    t0 = time.monotonic()
+    descriptions: List[ThumbnailDescription] = [None] * total
 
-    for i, url in enumerate(urls_to_analyse):
-        print(
-            f"[thumbnails] fetching thumbnail {i + 1}/{len(urls_to_analyse)}: {url[:60]}..."
-        )
-
-        image_b64 = _fetch_image_as_base64(url)
-
-        if image_b64 is None:
-            descriptions.append(
-                ThumbnailDescription(
+    import concurrent.futures
+    with concurrent.futures.ThreadPoolExecutor(max_workers=total) as executor:
+        future_to_index = {
+            executor.submit(_fetch_and_analyse_single, url, idx, total): idx
+            for idx, url in enumerate(urls_to_analyse)
+        }
+        for future in concurrent.futures.as_completed(future_to_index):
+            idx = future_to_index[future]
+            url = urls_to_analyse[idx]
+            try:
+                descriptions[idx] = future.result()
+            except Exception as e:
+                print(f"[thumbnails] worker crashed for {url}: {e}")
+                descriptions[idx] = ThumbnailDescription(
                     url=url,
                     dominant_colors="Unknown",
                     composition="Unknown",
                     text_overlays="Unknown",
                     mood="Unknown",
                     fetch_successful=False,
-                    error="Image fetch failed",
+                    error=str(e),
                 )
-            )
-            continue
-
-        print(
-            f"[thumbnails] image fetched ({len(image_b64)} b64 chars) — running vision analysis..."
-        )
-        description = _analyse_single_thumbnail(url, image_b64, model_name)
-        descriptions.append(description)
-        dc_preview = description.dominant_colors[:40]
-        print(
-            f"[thumbnails] thumbnail {i + 1} — colors: {dc_preview}, mood: {description.mood}"
-        )
 
     successful = [d for d in descriptions if d.fetch_successful]
 
@@ -258,8 +275,10 @@ def analyse_thumbnails(
         descriptions
     )
 
+    elapsed = time.monotonic() - t0
     print(
-        f"[thumbnails] analysis complete — {len(successful)}/{len(descriptions)} thumbnails analysed successfully"
+        f"[thumbnails] analysis complete in {elapsed:.1f}s — "
+        f"{len(successful)}/{len(descriptions)} thumbnails analysed successfully"
     )
     print(f"[thumbnails] dominant_pattern: {dominant_pattern[:80]}...")
 
@@ -323,8 +342,6 @@ if __name__ == "__main__":
     elif not youtube_key:
         print("ERROR: YOUTUBE_API_KEY not found in .env")
     else:
-        genai.configure(api_key=gemini_key)
-
         from competitor_scraper import scrape_competitor_intelligence
 
         test_queries = [

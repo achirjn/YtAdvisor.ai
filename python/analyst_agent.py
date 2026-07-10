@@ -3,10 +3,10 @@ import time
 import traceback
 from typing import Any, List, Optional
 
-import google.generativeai as genai
 from pydantic import BaseModel
 
 from api_models import AgentContext
+import llm_client
 import llm_service
 
 
@@ -128,47 +128,12 @@ def run_analyst_agent(
             "This is real data from the YouTube API — do not override it with assumptions.\n"
         )
 
-    model = genai.GenerativeModel(
-        llm_service._MODEL_NAME,
-        system_instruction=system_prompt,
-    )
-
     try:
-        response = llm_service.generate_content_with_timeout(
-            model,
-            user_prompt,
-            generation_config=genai.GenerationConfig(
-                temperature=0.7,
-                response_mime_type="application/json",
-            ),
-            timeout_s=240,
+        structured_llm = llm_client.get_structured_llm(AnalystAgentOutput, temperature=0.7, timeout_s=240)
+        result_obj = structured_llm.invoke(
+            [("system", system_prompt), ("human", user_prompt)]
         )
-    except Exception:
-        traceback.print_exc()
-        result = AnalystAgentOutput(
-            market_truth="Insufficient data",
-            dominant_force="Insufficient data",
-            competitor_weakness="Insufficient data",
-            audience_craving="Insufficient data",
-            content_gaps=[ContentGapItem(gap="Insufficient data", source="Analysis failed")],
-            small_creator_verdict="HARD",
-            small_creator_reason="Insufficient data",
-            algorithm_signal="Insufficient data",
-            satisfaction_risk=5,
-            content_archetype="CORE_AUDIENCE",
-            channel_strength="Insufficient data",
-            channel_risk="Insufficient data",
-        ).model_dump()
-        print({"stage": "analyst", "output": result})
-        print(f"[analyst] done in {time.monotonic() - t0:.1f}s")
-        return result
-
-    raw_text = response.text or ""
-    print(f"[analyst] raw response length: {len(raw_text)} chars")
-
-    try:
-        parsed = llm_service._parse(raw_text, AnalystAgentOutput)
-        result = parsed.model_dump()
+        result = result_obj.model_dump()
     except Exception:
         traceback.print_exc()
         result = AnalystAgentOutput(
