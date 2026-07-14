@@ -80,8 +80,9 @@ public class AnalysisStreamService {
         body.put("video_idea", videoIdea);
         if (finalCreatorDna != null) body.put("creator_dna", finalCreatorDna);
 
-        // 5. Create the SseEmitter (200-second timeout to cover the full pipeline)
-        SseEmitter emitter = new SseEmitter(200_000L);
+        // 5. Create the SseEmitter (300-second timeout — covers full pipeline worst case)
+        //    spring.mvc.async.request-timeout is set to -1 so this emitter is the sole authority.
+        SseEmitter emitter = new SseEmitter(300_000L);
         AtomicBoolean resultReceived = new AtomicBoolean(false);
 
         // 6. Subscribe to Python's SSE stream on the bounded-elastic pool
