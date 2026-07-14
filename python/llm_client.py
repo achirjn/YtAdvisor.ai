@@ -100,16 +100,25 @@ class _KeyRotatingChain:
                 chain = llm.with_structured_output(self._schema)
                 return chain.invoke(messages)
 
-            except ResourceExhausted as e:
-                last_exc = e
-                if i < len(_KEY_LIST) - 1:
-                    emit_progress("API key limit reached, trying a different one...")
+            except Exception as e:
+                err_msg = str(e)
+                # Detect 429 quota exhaustion (including LangChain's wrapped ChatGoogleGenerativeAIError)
+                is_quota_error = (
+                    isinstance(e, ResourceExhausted) or 
+                    "429" in err_msg or 
+                    "RESOURCE_EXHAUSTED" in err_msg or 
+                    "quota" in err_msg.lower()
+                )
+                
+                if is_quota_error:
+                    last_exc = e
+                    if i < len(_KEY_LIST) - 1:
+                        emit_progress("API key limit reached, trying a different one...")
+                    else:
+                        emit_progress("All API keys exhausted.")
                 else:
-                    emit_progress("All API keys exhausted.")
-
-            except Exception:
-                # Non-quota errors (network, auth, parsing) propagate immediately
-                raise
+                    # Non-quota errors (invalid key auth, parsing, network downtime) propagate immediately
+                    raise
 
         raise last_exc or RuntimeError("All API keys failed.")
 
