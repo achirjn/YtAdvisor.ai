@@ -1,32 +1,51 @@
-# Environment files
+# ── Secrets & Environment ─────────────────────────────────────────────────────
 .env
 .env.*
 
-# Python cache and bytecode
+# ── Code Dump Utilities & Output ──────────────────────────────────────────────
+dump_code.py
+dump_backend.py
+dump_frontend.py
+codeDump.txt
+backendDump.txt
+frontendDump.txt
+
+# ── Google Drive Temp Folders ─────────────────────────────────────────────────
+.tmp.drivedownload/
+.tmp.driveupload/
+
+# ── Runtime State ─────────────────────────────────────────────────────────────
+pipeline_state/
+
+# ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual environments
+# ── Python Virtual Environments ───────────────────────────────────────────────
 .venv/
 venv/
 env/
 ENV/
 
-# Tooling caches
+# ── Python Tooling Caches ─────────────────────────────────────────────────────
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
 
-# Build artifacts
+# ── Build Artifacts ───────────────────────────────────────────────────────────
 build/
 dist/
 *.egg-info/
 
-# Code dump utility and output
-dump_code.py
-codeDump.txt
-
-# Dependencies
+# ── Node / Frontend ───────────────────────────────────────────────────────────
 node_modules/
+frontend/dist/
 
+# ── OS Artifacts ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Editor ────────────────────────────────────────────────────────────────────
+.idea/
+*.iml
