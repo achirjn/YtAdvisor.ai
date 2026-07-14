@@ -4,15 +4,18 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.YtAdvisor.backend.entities.User;
 import com.YtAdvisor.backend.repositories.UserRepository;
+import com.YtAdvisor.backend.security.AuthUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,25 +25,19 @@ public class SecurityController {
 
     private UserRepository userRepository;
 
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
+
     public SecurityController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @GetMapping("/api/user/me")
     public Map<String, Object> me() {
-        // Grab the Google user object
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UUID userId = AuthUtil.getCurrentUserId();
 
-        if (!(principal instanceof DefaultOidcUser)) {
-            throw new RuntimeException("Not logged in");
-        }
-
-        // Extract their Google email
-        String email = ((DefaultOidcUser) principal).getEmail();
-
-        // Find the user in your database using their email
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        User user = userOpt.orElseThrow(() -> new RuntimeException("User not found in database"));
+        Optional<User> userOpt = userRepository.findById(userId);
+        User user = userOpt.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found in database"));
 
         return Map.of(
                 "id", user.getId(),
@@ -51,7 +48,7 @@ public class SecurityController {
 
     @GetMapping("/post-login")
     public void postLogin(HttpServletResponse response) throws IOException {
-        response.sendRedirect("http://localhost:5173/pricing");
+        response.sendRedirect(frontendUrl + "/pricing");
     }
 
     @GetMapping("/test")

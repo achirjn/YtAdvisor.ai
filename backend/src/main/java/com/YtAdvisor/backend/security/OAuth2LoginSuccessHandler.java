@@ -28,6 +28,9 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     @Value("${app.frontend-url}")
     private String frontendUrl;
 
+    @Value("${app.cookie-secure}")
+    private boolean cookieSecure;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
@@ -68,7 +71,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         ResponseCookie cookie = ResponseCookie.from("auth_token", token)
                 .httpOnly(true)
-                .secure(false)          // false in local dev if not using HTTPS
+                .secure(cookieSecure)
                 .sameSite("None")
                 .path("/")
                 .maxAge(Duration.ofDays(1))

@@ -1,0 +1,2293 @@
+// ==============================================================================
+// File: backend/pom.xml
+// ==============================================================================
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>4.0.5</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.YtAdvisor</groupId>
+	<artifactId>backend</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name/>
+	<description/>
+	<url/>
+	<licenses>
+		<license/>
+	</licenses>
+	<developers>
+		<developer/>
+	</developers>
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
+	<properties>
+		<java.version>21</java.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security-oauth2-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.6</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+		<!-- Flyway -->
+		<dependency>
+		    <groupId>org.flywaydb</groupId>
+		    <artifactId>flyway-core</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.flywaydb</groupId>
+		    <artifactId>flyway-database-postgresql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security-oauth2-client-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<!-- Netty (needed for WebClient reactor connector) -->
+		<dependency>
+		    <groupId>io.projectreactor.netty</groupId>
+		    <artifactId>reactor-netty-http</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>com.fasterxml.jackson.datatype</groupId>
+		    <artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							<annotationProcessorPaths>
+								<path>
+									<groupId>org.projectlombok</groupId>
+									<artifactId>lombok</artifactId>
+								</path>
+							</annotationProcessorPaths>
+						</configuration>
+					</execution>
+					<execution>
+						<id>default-testCompile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+						<configuration>
+							<annotationProcessorPaths>
+								<path>
+									<groupId>org.projectlombok</groupId>
+									<artifactId>lombok</artifactId>
+								</path>
+							</annotationProcessorPaths>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/BackendApplication.java
+// ==============================================================================
+
+package com.YtAdvisor.backend;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
+@SpringBootApplication
+@EnableScheduling
+public class BackendApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(BackendApplication.class, args);
+	}
+
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/configurations/FlywayConfig.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.configurations;
+
+import javax.sql.DataSource;
+
+import org.flywaydb.core.Flyway;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class FlywayConfig {
+
+    @Value("${spring.flyway.locations:classpath:db/migration}")
+    private String[] locations;
+
+    @Bean(initMethod = "migrate")
+    public Flyway flyway(DataSource dataSource) {
+        return Flyway.configure()
+                .dataSource(dataSource)
+                .locations(locations)
+                .baselineOnMigrate(false)
+                .validateOnMigrate(true)
+                .load();
+    }
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/configurations/WebClientConfig.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.configurations;
+
+
+import java.time.Duration;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.netty.channel.ChannelOption;
+import reactor.netty.http.client.HttpClient;
+
+@Configuration
+public class WebClientConfig {
+
+    @Value("${app.python-base-url}")
+    private String pythonBaseUrl;
+
+    @Bean
+    public WebClient pythonWebClient() {
+        HttpClient httpClient = HttpClient.create()
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10_000)
+                .responseTimeout(Duration.ofSeconds(180)); // analysis pipeline can be slow
+
+        return WebClient.builder()
+                .baseUrl(pythonBaseUrl)
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
+                .build();
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper()
+                .registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule())
+                .disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/controllers/AnalysisController.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.controllers;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.YtAdvisor.backend.dto.AnalysisRequestDto;
+import com.YtAdvisor.backend.entities.User;
+import com.YtAdvisor.backend.repositories.UserRepository;
+import com.YtAdvisor.backend.services.AnalysisService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequestMapping("/api/analysis")
+@CrossOrigin(origins = "http://localhost:5173")
+@RequiredArgsConstructor
+public class AnalysisController {
+
+    private final AnalysisService analysisService;
+    private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
+
+    @PostMapping(produces = "application/json")
+    public ResponseEntity<String> analyse(@Valid @RequestBody AnalysisRequestDto dto) {
+        System.out.println("Received analysis request: " + dto);
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!(principal instanceof DefaultOidcUser)) {
+            throw new RuntimeException("Not logged in");
+        }
+
+        String email = ((DefaultOidcUser) principal).getEmail();
+        User user = userRepository.findByEmail(email).orElseThrow();
+
+        JsonNode result = analysisService.analyse(user.getId(), dto.getVideoIdea());
+
+        try {
+            return ResponseEntity.ok(objectMapper.writeValueAsString(result));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to serialize response", e);
+        }
+    }
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/controllers/ChannelController.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.controllers;
+
+import java.util.Map;
+import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.YtAdvisor.backend.dto.ChannelConnectDto;
+import com.YtAdvisor.backend.dto.ChannelStatusResponse;
+import com.YtAdvisor.backend.entities.Channel;
+import com.YtAdvisor.backend.entities.PipelineJob;
+import com.YtAdvisor.backend.repositories.ChannelRepository;
+import com.YtAdvisor.backend.repositories.PipelineJobRepository;
+import com.YtAdvisor.backend.services.ChannelService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequestMapping("/api/channel")
+@RequiredArgsConstructor
+public class ChannelController {
+
+    private final ChannelService channelService;
+    private final ChannelRepository channelRepository;
+    private final PipelineJobRepository pipelineJobRepository;
+
+    @PostMapping("/connect")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Map<String, Object> connect(@Valid @RequestBody ChannelConnectDto dto) {
+        UUID userId = UUID.fromString((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
+        Channel channel = channelService.connectChannel(userId, dto.getChannelInput());
+
+        return Map.of(
+                "channelId", channel.getId().toString(),
+                "youtubeChannelId", channel.getYoutubeChannelId(),
+                "channelTitle", channel.getChannelTitle() != null ? channel.getChannelTitle() : "",
+                "phase", channel.getPipelineJob() != null
+                        ? channel.getPipelineJob().getPhase()
+                        : "BOOTSTRAPPING"
+        );
+    }
+
+    @GetMapping("/status")
+    public ChannelStatusResponse status() {
+        UUID userId = (UUID) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+
+        Channel channel = channelRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "No channel connected for this user"));
+
+        PipelineJob job = pipelineJobRepository
+                .findByChannel_Id(channel.getId())
+                .orElse(null);
+
+        return ChannelStatusResponse.builder()
+                .youtubeChannelId(channel.getYoutubeChannelId())
+                .channelTitle(channel.getChannelTitle())
+                .phase(job != null ? job.getPhase() : "NOT_STARTED")
+                .videosProcessed(job != null && job.getVideosProcessed() != null
+                        ? job.getVideosProcessed() : 0)
+                .totalVideosOnChannel(job != null && job.getTotalVideosOnChannel() != null
+                        ? job.getTotalVideosOnChannel() : 0)
+                .isReliable(job != null && Boolean.TRUE.equals(job.getIsReliable()))
+                .build();
+    }
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/controllers/SecurityController.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.controllers;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.YtAdvisor.backend.entities.User;
+import com.YtAdvisor.backend.repositories.UserRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+@RestController
+public class SecurityController {
+
+    private UserRepository userRepository;
+
+    public SecurityController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @GetMapping("/api/user/me")
+    public Map<String, Object> me() {
+        // Grab the Google user object
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!(principal instanceof DefaultOidcUser)) {
+            throw new RuntimeException("Not logged in");
+        }
+
+        // Extract their Google email
+        String email = ((DefaultOidcUser) principal).getEmail();
+
+        // Find the user in your database using their email
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        User user = userOpt.orElseThrow(() -> new RuntimeException("User not found in database"));
+
+        return Map.of(
+                "id", user.getId(),
+                "email", user.getEmail(),
+                "name", user.getName(),
+                "tier", user.getTier());
+    }
+
+    @GetMapping("/post-login")
+    public void postLogin(HttpServletResponse response) throws IOException {
+        response.sendRedirect("http://localhost:5173/pricing");
+    }
+
+    @GetMapping("/test")
+    @ResponseBody
+    public String test(HttpServletRequest request) {
+        return Arrays.toString(request.getCookies());
+    }
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/dto/AnalysisRequestDto.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class AnalysisRequestDto {
+
+    @NotBlank(message = "video_idea must not be blank")
+    @JsonProperty("video_idea")
+    private String videoIdea;
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/dto/ChannelConnectDto.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class ChannelConnectDto {
+
+    @NotBlank(message = "channelInput must not be blank")
+    private String channelInput;
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/dto/ChannelStatusResponse.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.dto;
+
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class ChannelStatusResponse {
+    private String youtubeChannelId;
+    private String channelTitle;
+    private String phase;
+    private int videosProcessed;
+    private int totalVideosOnChannel;
+    private boolean isReliable;
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/dto/PipelineStartResponse.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
+
+@Data
+public class PipelineStartResponse {
+
+    private boolean accepted;
+
+    @JsonProperty("channel_id")
+    private String channelId;
+
+    private String phase;
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/dto/PipelineStatusResponse.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
+
+@Data
+public class PipelineStatusResponse {
+
+    @JsonProperty("channel_id")
+    private String channelId;
+
+    @JsonProperty("channel_title")
+    private String channelTitle;
+
+    private String phase;
+
+    @JsonProperty("videos_processed")
+    private int videosProcessed;
+
+    @JsonProperty("total_videos_on_channel")
+    private int totalVideosOnChannel;
+
+    @JsonProperty("is_reliable")
+    private boolean isReliable;
+
+    @JsonProperty("last_error")
+    private String lastError;
+
+    @JsonProperty("dna_summary")
+    private String dnaSummary;
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/entities/AnalysisRequest.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.entities;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(name = "analysis_requests")
+@Getter
+@Setter
+public class AnalysisRequest {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(updatable = false, nullable = false)
+    private UUID id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "channel_id")
+    private Channel channel;
+
+    @Column(name = "video_idea", nullable = false, columnDefinition = "TEXT")
+    private String videoIdea;
+
+    @Column(name = "creator_dna_used", columnDefinition = "TEXT")
+    private String creatorDnaUsed;
+
+    @Column(nullable = false)
+    private String status = "PENDING";
+
+    @Column(name = "error_message", columnDefinition = "TEXT")
+    private String errorMessage;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private OffsetDateTime createdAt;
+
+    @Column(name = "completed_at")
+    private OffsetDateTime completedAt;
+
+    @OneToOne(mappedBy = "request", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private AnalysisResponse response;
+}
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/entities/AnalysisResponse.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.entities;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+
+@Entity
+@Table(name = "analysis_responses")
+@Getter
+@Setter
+public class AnalysisResponse {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(updatable = false, nullable = false)
+    private UUID id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "request_id", nullable = false, unique = true)
+    private AnalysisRequest request;
+
+    @Column(name = "raw_response", nullable = false, columnDefinition = "TEXT")
+    private String rawResponse;
+
+    @Column(name = "final_verdict")
+    private String finalVerdict;
+
+    @Column(name = "confidence")
+    private String confidence;
+
+    @Column(name = "small_creator_verdict")
+    private String smallCreatorVerdict;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private OffsetDateTime createdAt;
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/entities/Channel.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.entities;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Table(name = "channels")
+@Getter
+@Setter
+public class Channel {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(updatable = false, nullable = false)
+    private UUID id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
+
+    @Column(name = "youtube_channel_id", nullable = false)
+    private String youtubeChannelId;
+
+    @Column(name = "channel_title")
+    private String channelTitle;
+
+    @Column(name = "subscriber_count")
+    private Long subscriberCount = 0L;
+
+    @Column(name = "total_video_count")
+    private Integer totalVideoCount = 0;
+
+    @CreationTimestamp
+    @Column(name = "connected_at", updatable = false, nullable = false)
+    private OffsetDateTime connectedAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private OffsetDateTime updatedAt;
+
+    @OneToOne(mappedBy = "channel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private PipelineJob pipelineJob;
+
+    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DnaSnapshot> dnaSnapshots = new ArrayList<>();
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/entities/DnaSnapshot.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.entities;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+
+@Entity
+@Table(name = "dna_snapshots")
+@Getter
+@Setter
+public class DnaSnapshot {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(updatable = false, nullable = false)
+    private UUID id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "channel_id", nullable = false)
+    private Channel channel;
+
+    @Column(name = "dna_summary", columnDefinition = "TEXT")
+    private String dnaSummary;
+
+    @Column(name = "audience_age_range")
+    private String audienceAgeRange;
+
+    @Column(name = "preferred_format")
+    private String preferredFormat;
+
+    @Column(name = "engagement_tone")
+    private String engagementTone;
+
+    @Column(name = "recurring_questions", columnDefinition = "TEXT")
+    private String recurringQuestions;
+
+    @Column(name = "content_wants_more", columnDefinition = "TEXT")
+    private String contentWantsMore;
+
+    @Column(name = "content_complaints", columnDefinition = "TEXT")
+    private String contentComplaints;
+
+    @Column(name = "total_comments_analysed")
+    private Integer totalCommentsAnalysed = 0;
+
+    @Column(name = "videos_processed")
+    private Integer videosProcessed = 0;
+
+    @Column(name = "is_reliable")
+    private Boolean isReliable = false;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private OffsetDateTime createdAt;
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/entities/PipelineJob.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.entities;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+
+@Entity
+@Table(name = "pipeline_jobs")
+@Getter
+@Setter
+public class PipelineJob {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(updatable = false, nullable = false)
+    private UUID id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "channel_id", nullable = false, unique = true)
+    private Channel channel;
+
+    @Column(nullable = false)
+    private String phase = "BOOTSTRAPPING";
+
+    @Column(name = "total_videos_on_channel")
+    private Integer totalVideosOnChannel = 0;
+
+    @Column(name = "videos_processed")
+    private Integer videosProcessed = 0;
+
+    @Column(name = "current_batch_index")
+    private Integer currentBatchIndex = 0;
+
+    @Column(name = "is_reliable")
+    private Boolean isReliable = false;
+
+    @Column(name = "consecutive_failures")
+    private Integer consecutiveFailures = 0;
+
+    @Column(name = "last_error")
+    private String lastError;
+
+    @Column(name = "last_run_at")
+    private OffsetDateTime lastRunAt;
+
+    @Column(name = "next_run_at")
+    private OffsetDateTime nextRunAt;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private OffsetDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private OffsetDateTime updatedAt;
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/entities/Subscription.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.entities;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+
+@Entity
+@Table(name = "subscriptions")
+@Getter
+@Setter
+public class Subscription {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(updatable = false, nullable = false)
+    private UUID id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "user_tier")
+    private UserTier tier;
+
+    @Column(name = "started_at", nullable = false)
+    private OffsetDateTime startedAt;
+
+    @Column(name = "ended_at")
+    private OffsetDateTime endedAt;
+
+    @Column(name = "payment_ref")
+    private String paymentRef;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private OffsetDateTime createdAt;
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/entities/User.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.entities;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+
+@Entity
+@Table(name = "users")
+@Getter
+@Setter
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(updatable = false, nullable = false)
+    private UUID id;
+
+    @Column(name = "google_id", nullable = false, unique = true)
+    private String googleId;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    private String name;
+
+    @Column(name = "picture_url")
+    private String pictureUrl;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private OffsetDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private OffsetDateTime updatedAt;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Channel channel;
+
+    @Column(nullable = false, columnDefinition = "user_tier")
+    @Enumerated(EnumType.STRING)
+    private UserTier tier = UserTier.STARTER;
+
+    @Column(name = "requests_this_week", nullable = false)
+    private Integer requestsThisWeek = 0;
+
+    @Column(name = "week_reset_at", nullable = false)
+    private OffsetDateTime weekResetAt = OffsetDateTime.now();
+}
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/entities/UserAnalytics.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.entities;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(name = "user_analytics")
+@Getter
+@Setter
+public class UserAnalytics {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(updatable = false, nullable = false)
+    private UUID id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
+
+    @Column(name = "total_analyses_run", nullable = false)
+    private Integer totalAnalysesRun = 0;
+
+    @Column(name = "total_pro_activations", nullable = false)
+    private Integer totalProActivations = 0;
+
+    @Column(name = "total_ultimate_activations", nullable = false)
+    private Integer totalUltimateActivations = 0;
+
+    @Column(name = "total_downgrades", nullable = false)
+    private Integer totalDowngrades = 0;
+
+    @Column(name = "channel_connected_at")
+    private OffsetDateTime channelConnectedAt;
+
+    @Column(name = "pipeline_completed_at")
+    private OffsetDateTime pipelineCompletedAt;
+
+    @Column(name = "first_analysis_at")
+    private OffsetDateTime firstAnalysisAt;
+
+    @Column(name = "last_analysis_at")
+    private OffsetDateTime lastAnalysisAt;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private OffsetDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private OffsetDateTime updatedAt;
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/entities/UserTier.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.entities;
+
+public enum UserTier {
+    STARTER, PRO, ULTIMATE
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/repositories/AnalysisRequestRepository.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.repositories;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.YtAdvisor.backend.entities.AnalysisRequest;
+
+public interface AnalysisRequestRepository extends JpaRepository<AnalysisRequest, UUID> {
+    List<AnalysisRequest> findByUser_IdOrderByCreatedAtDesc(UUID userId);
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/repositories/AnalysisResponseRepository.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.repositories;
+
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.YtAdvisor.backend.entities.AnalysisResponse;
+
+public interface AnalysisResponseRepository extends JpaRepository<AnalysisResponse, UUID> {
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/repositories/ChannelRepository.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.repositories;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.YtAdvisor.backend.entities.Channel;
+
+public interface ChannelRepository extends JpaRepository<Channel, UUID> {
+    Optional<Channel> findByUser_Id(UUID userId);
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/repositories/DnaSnapshotRepository.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.repositories;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.YtAdvisor.backend.entities.DnaSnapshot;
+
+public interface DnaSnapshotRepository extends JpaRepository<DnaSnapshot, UUID> {
+    Optional<DnaSnapshot> findTopByChannel_IdOrderByCreatedAtDesc(UUID channelId);
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/repositories/PipelineJobRepository.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.repositories;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.YtAdvisor.backend.entities.PipelineJob;
+
+public interface PipelineJobRepository extends JpaRepository<PipelineJob, UUID> {
+    Optional<PipelineJob> findByChannel_Id(UUID channelId);
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/repositories/SubscriptionRepository.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.repositories;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.YtAdvisor.backend.entities.Subscription;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+public interface SubscriptionRepository extends JpaRepository<Subscription, UUID> {
+    List<Subscription> findByUser_IdOrderByStartedAtDesc(UUID userId);
+    Optional<Subscription> findTopByUser_IdAndEndedAtIsNullOrderByStartedAtDesc(UUID userId);
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/repositories/UserAnalyticsRepository.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.repositories;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.YtAdvisor.backend.entities.UserAnalytics;
+
+import java.util.Optional;
+import java.util.UUID;
+
+public interface UserAnalyticsRepository extends JpaRepository<UserAnalytics, UUID> {
+    Optional<UserAnalytics> findByUser_Id(UUID userId);
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/repositories/UserRepository.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.repositories;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.YtAdvisor.backend.entities.User;
+
+public interface UserRepository extends JpaRepository<User, UUID> {
+    Optional<User> findByGoogleId(String googleId);
+    Optional<User> findByEmail(String email);
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/schedulers/PipelineStatusScheduler.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.schedulers;
+
+
+import java.util.List;
+
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import com.YtAdvisor.backend.entities.Channel;
+import com.YtAdvisor.backend.entities.PipelineJob;
+import com.YtAdvisor.backend.repositories.ChannelRepository;
+import com.YtAdvisor.backend.repositories.UserRepository;
+import com.YtAdvisor.backend.services.PipelineService;
+import com.YtAdvisor.backend.services.TierService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class PipelineStatusScheduler {
+
+    private final ChannelRepository channelRepository;
+    private final PipelineService pipelineService;
+    private final TierService tierService;
+    private final UserRepository userRepository;
+
+    // Runs every 30 minutes
+    @Scheduled(fixedDelay = 1_800_000)
+    public void syncAllPipelines() {
+        List<Channel> channels = channelRepository.findAll();
+        log.info("[scheduler] syncing {} channels", channels.size());
+
+        for (Channel channel : channels) {
+            try {
+                pipelineService.syncPipelineStatus(channel);
+                log.info("[scheduler] synced channel: {} phase={}",
+                        channel.getYoutubeChannelId(),
+                        channel.getPipelineJob() != null
+                                ? channel.getPipelineJob().getPhase()
+                                : "NO_JOB");
+                PipelineJob job = channel.getPipelineJob();
+                if (job != null && Boolean.TRUE.equals(job.getIsReliable())) {
+                    userRepository.findById(channel.getUser().getId()).ifPresent(user -> {
+                        tierService.recordPipelineCompleted(user);
+                    });
+            }
+            } catch (Exception e) {
+                log.error("[scheduler] sync failed for channel {}: {}",
+                        channel.getYoutubeChannelId(), e.getMessage());
+            }
+        }
+    }
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/security/JwtAuthFilter.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.security;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+
+@Component
+@RequiredArgsConstructor
+public class JwtAuthFilter extends OncePerRequestFilter {
+
+    private final JwtService jwtService;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
+        String token = extractToken(request);
+
+        if (StringUtils.hasText(token) && jwtService.validateToken(token)) {
+            String userId = jwtService.extractUserId(token).toString();
+            UsernamePasswordAuthenticationToken auth =
+                    new UsernamePasswordAuthenticationToken(userId, null, List.of());
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
+
+        filterChain.doFilter(request, response);
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        if (request.getCookies() == null) return null;
+        return Arrays.stream(request.getCookies())
+                .filter(c -> "auth_token".equals(c.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+    }
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/security/JwtService.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.security;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.UUID;
+
+@Service
+public class JwtService {
+
+    @Value("${app.jwt-secret}")
+    private String jwtSecret;
+
+    @Value("${app.jwt-expiry-ms}")
+    private long jwtExpiryMs;
+
+    private SecretKey signingKey() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public String generateToken(UUID userId, String email) {
+        long now = System.currentTimeMillis();
+        return Jwts.builder()
+                .subject(userId.toString())
+                .claim("email", email)
+                .issuedAt(new Date(now))
+                .expiration(new Date(now + jwtExpiryMs))
+                .signWith(signingKey())
+                .compact();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(signingKey())
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public UUID extractUserId(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(signingKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return UUID.fromString(claims.getSubject());
+    }
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/security/OAuth2LoginSuccessHandler.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.security;
+
+import java.io.IOException;
+import java.time.Duration;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
+
+import com.YtAdvisor.backend.entities.User;
+import com.YtAdvisor.backend.repositories.UserRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+
+@Component
+@RequiredArgsConstructor
+public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
+
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        Authentication authentication) throws IOException {
+
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+
+        String googleId = oAuth2User.getAttribute("sub");
+        String email    = oAuth2User.getAttribute("email");
+        String name     = oAuth2User.getAttribute("name");
+        String picture  = oAuth2User.getAttribute("picture");
+
+        User user = userRepository.findByGoogleId(googleId)
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setGoogleId(googleId);
+                    newUser.setEmail(email);
+                    newUser.setName(name);
+                    newUser.setPictureUrl(picture);
+                    return userRepository.save(newUser);
+                });
+
+        // Keep name and picture in sync with Google
+        boolean dirty = false;
+        if (name != null && !name.equals(user.getName())) {
+            user.setName(name);
+            dirty = true;
+        }
+        if (picture != null && !picture.equals(user.getPictureUrl())) {
+            user.setPictureUrl(picture);
+            dirty = true;
+        }
+        if (dirty) {
+            userRepository.save(user);
+        }
+
+        String token = jwtService.generateToken(user.getId(), user.getEmail());
+
+        ResponseCookie cookie = ResponseCookie.from("auth_token", token)
+                .httpOnly(true)
+                .secure(false)          // false in local dev if not using HTTPS
+                .sameSite("None")
+                .path("/")
+                .maxAge(Duration.ofDays(1))
+                .build();
+        
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        getRedirectStrategy().sendRedirect(request, response, "/post-login");
+    }
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/security/SecurityConfig.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import lombok.RequiredArgsConstructor;
+
+@Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
+public class SecurityConfig {
+
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final JwtAuthFilter jwtAuthFilter;
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/",
+                    "/login",
+                    "/error",
+                    "/oauth2/**",
+                    "/login/**",
+                    "/api/auth/**"
+                ).permitAll()
+                .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/oauth2/authorization/google")
+                .successHandler(oAuth2LoginSuccessHandler)
+                .failureHandler((request, response, exception) -> {
+                    exception.printStackTrace();
+                    response.sendRedirect("/login?error");  // no message in URL
+                })
+            )
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/services/AnalysisService.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.services;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.YtAdvisor.backend.entities.AnalysisRequest;
+import com.YtAdvisor.backend.entities.AnalysisResponse;
+import com.YtAdvisor.backend.entities.Channel;
+import com.YtAdvisor.backend.entities.DnaSnapshot;
+import com.YtAdvisor.backend.entities.User;
+import com.YtAdvisor.backend.repositories.AnalysisRequestRepository;
+import com.YtAdvisor.backend.repositories.AnalysisResponseRepository;
+import com.YtAdvisor.backend.repositories.ChannelRepository;
+import com.YtAdvisor.backend.repositories.DnaSnapshotRepository;
+import com.YtAdvisor.backend.repositories.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class AnalysisService {
+
+    private final UserRepository userRepository;
+    private final ChannelRepository channelRepository;
+    private final DnaSnapshotRepository dnaSnapshotRepository;
+    private final AnalysisRequestRepository analysisRequestRepository;
+    private final AnalysisResponseRepository analysisResponseRepository;
+    private final PythonClient pythonClient;
+    private final ObjectMapper objectMapper;
+    private final TierService tierService;
+
+    @Transactional
+    public JsonNode analyse(UUID userId, String videoIdea) {
+        // 1. Load user
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "User not found"));
+
+        // Check tier and consume request
+        tierService.checkAndConsumeRequest(user);
+
+        // 2. Load channel and latest reliable DNA (if available)
+        Channel channel = channelRepository.findByUser_Id(userId).orElse(null);
+        String creatorDna = null;
+
+        if (channel != null) {
+            DnaSnapshot snap = dnaSnapshotRepository
+                    .findTopByChannel_IdOrderByCreatedAtDesc(channel.getId())
+                    .orElse(null);
+            if (snap != null && Boolean.TRUE.equals(snap.getIsReliable())) {
+                creatorDna = snap.getDnaSummary();
+                log.info("[analysis] using DNA snapshot for channel: {}", channel.getYoutubeChannelId());
+            }
+        }
+
+        // 3. Save request as PROCESSING
+        AnalysisRequest analysisRequest = new AnalysisRequest();
+        analysisRequest.setUser(user);
+        analysisRequest.setChannel(channel);
+        analysisRequest.setVideoIdea(videoIdea);
+        analysisRequest.setCreatorDnaUsed(creatorDna);
+        analysisRequest.setStatus("PROCESSING");
+        analysisRequest = analysisRequestRepository.save(analysisRequest);
+
+        // 4. Call Python
+        JsonNode rawJson;
+        try {
+            String rawString = pythonClient.callAutoAnalyze(videoIdea, creatorDna);
+            rawJson = objectMapper.readTree(rawString);
+        } catch (Exception e) {
+            log.error("[analysis] Python call failed: {}", e.getMessage());
+            analysisRequest.setStatus("FAILED");
+            analysisRequest.setErrorMessage(e.getMessage());
+            analysisRequest.setCompletedAt(OffsetDateTime.now());
+            analysisRequestRepository.save(analysisRequest);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_GATEWAY, "Analysis service error: " + e.getMessage());
+        }
+
+        // 5. Persist full response
+        String rawStr;
+        try {
+            rawStr = objectMapper.writeValueAsString(rawJson);
+        } catch (JsonProcessingException e) {
+            rawStr = "{}";
+        }
+
+        AnalysisResponse analysisResponse = new AnalysisResponse();
+        analysisResponse.setRequest(analysisRequest);
+        analysisResponse.setRawResponse(rawStr);
+        analysisResponse.setFinalVerdict(
+                rawJson.path("verdict").path("final_verdict").asText(null));
+        analysisResponse.setConfidence(
+                rawJson.path("verdict").path("confidence").asText(null));
+        analysisResponse.setSmallCreatorVerdict(
+                rawJson.path("market").path("small_creator_verdict").asText(null));
+        analysisResponseRepository.save(analysisResponse);
+
+        // Record usage for tier limits
+        tierService.recordAnalysisRun(user);
+
+        // 6. Mark request complete
+        analysisRequest.setStatus("COMPLETED");
+        analysisRequest.setCompletedAt(OffsetDateTime.now());
+        analysisRequestRepository.save(analysisRequest);
+
+        log.info("[analysis] completed for userId={}, verdict={}",
+                userId, analysisResponse.getFinalVerdict());
+
+        return rawJson;
+    }
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/services/ChannelService.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.services;
+
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.YtAdvisor.backend.dto.PipelineStartResponse;
+import com.YtAdvisor.backend.entities.Channel;
+import com.YtAdvisor.backend.entities.User;
+import com.YtAdvisor.backend.entities.UserTier;
+import com.YtAdvisor.backend.repositories.ChannelRepository;
+import com.YtAdvisor.backend.repositories.UserRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class ChannelService {
+
+    private final ChannelRepository channelRepository;
+    private final UserRepository userRepository;
+    private final PythonClient pythonClient;
+    private final PipelineService pipelineService;
+    private final TierService tierService;
+
+    @Value("${youtube.api-key:}")
+    private String youtubeApiKey;
+
+    @Transactional
+    public Channel connectChannel(UUID userId, String channelInput) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "User not found"));
+
+        if (user.getTier() == UserTier.STARTER) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN, "Channel connection requires a paid plan");
+        }
+
+        // 1. Tell Python to start/resume pipeline — Python resolves handle/URL to channel ID
+        PipelineStartResponse startResp = pythonClient.callPipelineStart(channelInput, youtubeApiKey);
+        if (startResp == null || startResp.getChannelId() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_GATEWAY, "Could not start audience pipeline — Python unreachable");
+        }
+
+        String resolvedChannelId = startResp.getChannelId();
+        log.info("[channel] resolved channelId={} for input={}", resolvedChannelId, channelInput);
+
+        // 2. Upsert channel record
+        Channel channel = channelRepository.findByUser_Id(userId)
+                .orElse(new Channel());
+        channel.setUser(user);
+        channel.setYoutubeChannelId(resolvedChannelId);
+        channel = channelRepository.save(channel);
+
+        // 3. Immediately sync status to populate title, phase, etc.
+        try {
+            pipelineService.syncPipelineStatus(channel);
+            // Reload to pick up any title update syncPipelineStatus may have saved
+            channel = channelRepository.findById(channel.getId()).orElse(channel);
+        } catch (Exception e) {
+            // Non-fatal — channel is saved, sync will run on next scheduler tick
+            log.warn("[channel] initial status sync failed for {}: {}", resolvedChannelId, e.getMessage());
+        }
+        
+        tierService.recordChannelConnected(user);
+
+        return channel;
+    }
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/services/PipelineService.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.services;
+
+import java.time.OffsetDateTime;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.YtAdvisor.backend.dto.PipelineStartResponse;
+import com.YtAdvisor.backend.dto.PipelineStatusResponse;
+import com.YtAdvisor.backend.entities.Channel;
+import com.YtAdvisor.backend.entities.DnaSnapshot;
+import com.YtAdvisor.backend.entities.PipelineJob;
+import com.YtAdvisor.backend.repositories.ChannelRepository;
+import com.YtAdvisor.backend.repositories.DnaSnapshotRepository;
+import com.YtAdvisor.backend.repositories.PipelineJobRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class PipelineService {
+
+    private final PythonClient pythonClient;
+    private final PipelineJobRepository pipelineJobRepository;
+    private final DnaSnapshotRepository dnaSnapshotRepository;
+    private final ChannelRepository channelRepository;
+
+    @Value("${youtube.api-key:}")
+    private String youtubeApiKey;
+
+    @Transactional
+    public void startPipeline(Channel channel) {
+        log.info("[pipeline] starting for channel: {}", channel.getYoutubeChannelId());
+        PipelineStartResponse resp = pythonClient.callPipelineStart(
+                channel.getYoutubeChannelId(), youtubeApiKey);
+        if (resp == null) {
+            log.warn("[pipeline] start returned null for channel: {}", channel.getYoutubeChannelId());
+            return;
+        }
+        upsertPipelineJobFromStart(channel, resp.getPhase());
+    }
+
+    @Transactional
+    public void syncPipelineStatus(Channel channel) {
+        PipelineStatusResponse status =
+                pythonClient.callPipelineStatus(channel.getYoutubeChannelId());
+        if (status == null) {
+            log.debug("[pipeline] no status available for channel: {}", channel.getYoutubeChannelId());
+            return;
+        }
+
+        // Update channel title if Python resolved it
+        if (status.getChannelTitle() != null
+                && !status.getChannelTitle().isBlank()
+                && !status.getChannelTitle().equals(channel.getChannelTitle())) {
+            channel.setChannelTitle(status.getChannelTitle());
+            channelRepository.save(channel);
+        }
+
+        applyStatusToJob(channel, status);
+    }
+
+    private void upsertPipelineJobFromStart(Channel channel, String phase) {
+        PipelineJob job = pipelineJobRepository
+                .findByChannel_Id(channel.getId())
+                .orElse(new PipelineJob());
+        job.setChannel(channel);
+        job.setPhase(phase != null ? phase : "BOOTSTRAPPING");
+        job.setLastRunAt(OffsetDateTime.now());
+        pipelineJobRepository.save(job);
+    }
+
+    private void applyStatusToJob(Channel channel, PipelineStatusResponse status) {
+        PipelineJob job = pipelineJobRepository
+                .findByChannel_Id(channel.getId())
+                .orElse(new PipelineJob());
+
+        job.setChannel(channel);
+        job.setPhase(status.getPhase());
+        job.setTotalVideosOnChannel(status.getTotalVideosOnChannel());
+        job.setVideosProcessed(status.getVideosProcessed());
+        job.setIsReliable(status.isReliable());
+        job.setLastError(status.getLastError());
+        job.setLastRunAt(OffsetDateTime.now());
+        pipelineJobRepository.save(job);
+
+        // Persist DNA snapshot if one came back and it's non-empty
+        if (status.getDnaSummary() != null && !status.getDnaSummary().isBlank()) {
+            DnaSnapshot snap = new DnaSnapshot();
+            snap.setChannel(channel);
+            snap.setDnaSummary(status.getDnaSummary());
+            snap.setIsReliable(status.isReliable());
+            snap.setVideosProcessed(status.getVideosProcessed());
+            dnaSnapshotRepository.save(snap);
+            log.info("[pipeline] DNA snapshot saved for channel: {}", channel.getYoutubeChannelId());
+        }
+    }
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/services/PythonClient.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.services;
+
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+
+import com.YtAdvisor.backend.dto.PipelineStartResponse;
+import com.YtAdvisor.backend.dto.PipelineStatusResponse;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class PythonClient {
+
+        private final WebClient pythonWebClient;
+
+        public String callAutoAnalyze(String videoIdea, String creatorDna) {
+                Map<String, Object> body = new HashMap<>();
+                body.put("video_idea", videoIdea);
+                if (creatorDna != null && !creatorDna.isBlank()) {
+                        body.put("creator_dna", creatorDna);
+                }
+
+                return pythonWebClient
+                                .post()
+                                .uri("/api/v1/analyze/auto")
+                                .bodyValue(body)
+                                .retrieve()
+                                .onStatus(
+                                                status -> !status.is2xxSuccessful(),
+                                                clientResponse -> clientResponse.bodyToMono(String.class)
+                                                                .map(errorBody -> new RuntimeException(
+                                                                                "Python analysis error ["
+                                                                                                + clientResponse.statusCode()
+                                                                                                + "]: " + errorBody)))
+                                .bodyToMono(String.class)
+                                .timeout(Duration.ofSeconds(180))
+                                .block();
+        }
+
+        public PipelineStartResponse callPipelineStart(String channelId, String youtubeApiKey) {
+                Map<String, Object> body = new HashMap<>();
+                body.put("channel_id", channelId);
+                if (youtubeApiKey != null && !youtubeApiKey.isBlank()) {
+                        body.put("youtube_api_key", youtubeApiKey);
+                }
+
+                return pythonWebClient
+                                .post()
+                                .uri("/api/v1/audience/pipeline/start")
+                                .bodyValue(body)
+                                .retrieve()
+                                .onStatus(
+                                                status -> !status.is2xxSuccessful(),
+                                                clientResponse -> clientResponse.bodyToMono(String.class)
+                                                                .map(errorBody -> new RuntimeException(
+                                                                                "Pipeline start error ["
+                                                                                                + clientResponse.statusCode()
+                                                                                                + "]: " + errorBody)))
+                                .bodyToMono(PipelineStartResponse.class)
+                                .timeout(Duration.ofSeconds(60))
+                                .block();
+        }
+
+        /**
+         * Returns null if the channel has no pipeline (404), throws on other errors.
+         */
+        public PipelineStatusResponse callPipelineStatus(String channelId) {
+                try {
+                        return pythonWebClient
+                                        .get()
+                                        .uri("/api/v1/audience/pipeline/status/{channelId}", channelId)
+                                        .retrieve()
+                                        .onStatus(
+                                                        status -> !status.is2xxSuccessful()
+                                                                        && !status.isSameCodeAs(HttpStatus.NOT_FOUND),
+                                                        clientResponse -> clientResponse.bodyToMono(String.class)
+                                                                        .map(errorBody -> new RuntimeException(
+                                                                                        "Pipeline status error ["
+                                                                                                        + clientResponse.statusCode()
+                                                                                                        + "]: "
+                                                                                                        + errorBody)))
+                                        .bodyToMono(PipelineStatusResponse.class)
+                                        .timeout(Duration.ofSeconds(30))
+                                        .block();
+                } catch (WebClientResponseException.NotFound e) {
+                        log.warn("[PythonClient] no pipeline found for channel: {}", channelId);
+                        return null;
+                }
+        }
+}
+
+
+// ==============================================================================
+// File: backend/src/main/java/com/YtAdvisor/backend/services/TierService.java
+// ==============================================================================
+
+package com.YtAdvisor.backend.services;
+
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.YtAdvisor.backend.entities.Subscription;
+import com.YtAdvisor.backend.entities.User;
+import com.YtAdvisor.backend.entities.UserAnalytics;
+import com.YtAdvisor.backend.entities.UserTier;
+import com.YtAdvisor.backend.repositories.SubscriptionRepository;
+import com.YtAdvisor.backend.repositories.UserAnalyticsRepository;
+import com.YtAdvisor.backend.repositories.UserRepository;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class TierService {
+
+    private static final int FREE_LIMIT    = 2;
+    private static final int PRO_LIMIT     = 7;
+    // ULTIMATE has no limit
+
+    private final UserRepository userRepository;
+    private final SubscriptionRepository subscriptionRepository;
+    private final UserAnalyticsRepository userAnalyticsRepository;
+
+    /**
+     * Called before every analysis. Resets weekly counter if needed,
+     * checks the limit, increments the counter. Throws 429 if over limit.
+     */
+    @Transactional
+    public void checkAndConsumeRequest(User user) {
+        resetWeekIfNeeded(user);
+
+        if (user.getTier() == UserTier.ULTIMATE) {
+            // No limit — just increment for analytics
+            user.setRequestsThisWeek(user.getRequestsThisWeek() + 1);
+            userRepository.save(user);
+            return;
+        }
+
+        int limit = user.getTier() == UserTier.PRO ? PRO_LIMIT : FREE_LIMIT;
+
+        if (user.getRequestsThisWeek() >= limit) {
+            throw new ResponseStatusException(
+                HttpStatus.TOO_MANY_REQUESTS,
+                "Weekly limit of " + limit + " analyses reached for "
+                    + user.getTier() + " plan. Resets on "
+                    + user.getWeekResetAt().plusWeeks(1).toLocalDate()
+            );
+        }
+
+        user.setRequestsThisWeek(user.getRequestsThisWeek() + 1);
+        userRepository.save(user);
+    }
+
+    /**
+     * Upgrades or downgrades a user's tier. Records the subscription event.
+     */
+    @Transactional
+    public void changeTier(UUID userId, UserTier newTier, String paymentRef) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "User not found"));
+
+        UserTier oldTier = user.getTier();
+        if (oldTier == newTier) return;
+
+        // Close current active subscription if any
+        subscriptionRepository
+                .findTopByUser_IdAndEndedAtIsNullOrderByStartedAtDesc(userId)
+                .ifPresent(sub -> {
+                    sub.setEndedAt(OffsetDateTime.now());
+                    subscriptionRepository.save(sub);
+                });
+
+        // Open new subscription
+        Subscription sub = new Subscription();
+        sub.setUser(user);
+        sub.setTier(newTier);
+        sub.setStartedAt(OffsetDateTime.now());
+        sub.setPaymentRef(paymentRef);
+        subscriptionRepository.save(sub);
+
+        // Update user tier
+        user.setTier(newTier);
+        userRepository.save(user);
+
+        // Update analytics
+        UserAnalytics analytics = getOrCreateAnalytics(user);
+        boolean isUpgrade = tierRank(newTier) > tierRank(oldTier);
+        if (isUpgrade) {
+            if (newTier == UserTier.PRO)      analytics.setTotalProActivations(analytics.getTotalProActivations() + 1);
+            if (newTier == UserTier.ULTIMATE) analytics.setTotalUltimateActivations(analytics.getTotalUltimateActivations() + 1);
+        } else {
+            analytics.setTotalDowngrades(analytics.getTotalDowngrades() + 1);
+        }
+        userAnalyticsRepository.save(analytics);
+
+        log.info("[tier] userId={} changed from {} to {}", userId, oldTier, newTier);
+    }
+
+    /**
+     * Called from ChannelService after a channel is connected.
+     */
+    @Transactional
+    public void recordChannelConnected(User user) {
+        UserAnalytics analytics = getOrCreateAnalytics(user);
+        if (analytics.getChannelConnectedAt() == null) {
+            analytics.setChannelConnectedAt(OffsetDateTime.now());
+            userAnalyticsRepository.save(analytics);
+        }
+    }
+
+    /**
+     * Called from PipelineStatusScheduler when a DNA snapshot becomes reliable.
+     */
+    @Transactional
+    public void recordPipelineCompleted(User user) {
+        UserAnalytics analytics = getOrCreateAnalytics(user);
+        if (analytics.getPipelineCompletedAt() == null) {
+            analytics.setPipelineCompletedAt(OffsetDateTime.now());
+            userAnalyticsRepository.save(analytics);
+        }
+    }
+
+    /**
+     * Called from AnalysisService after a successful analysis.
+     */
+    @Transactional
+    public void recordAnalysisRun(User user) {
+        UserAnalytics analytics = getOrCreateAnalytics(user);
+        analytics.setTotalAnalysesRun(analytics.getTotalAnalysesRun() + 1);
+        if (analytics.getFirstAnalysisAt() == null) {
+            analytics.setFirstAnalysisAt(OffsetDateTime.now());
+        }
+        analytics.setLastAnalysisAt(OffsetDateTime.now());
+        userAnalyticsRepository.save(analytics);
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private void resetWeekIfNeeded(User user) {
+        OffsetDateTime now = OffsetDateTime.now();
+        if (now.isAfter(user.getWeekResetAt().plusWeeks(1))) {
+            user.setRequestsThisWeek(0);
+            user.setWeekResetAt(now);
+            userRepository.save(user);
+            log.info("[tier] weekly counter reset for userId={}", user.getId());
+        }
+    }
+
+    private UserAnalytics getOrCreateAnalytics(User user) {
+        return userAnalyticsRepository.findByUser_Id(user.getId())
+                .orElseGet(() -> {
+                    UserAnalytics a = new UserAnalytics();
+                    a.setUser(user);
+                    return userAnalyticsRepository.save(a);
+                });
+    }
+
+    private int tierRank(UserTier tier) {
+        return switch (tier) {
+            case STARTER -> 0;
+            case PRO -> 1;
+            case ULTIMATE -> 2;
+        };
+    }
+}
+
+
+// ==============================================================================
+// File: backend/src/main/resources/application.properties
+// ==============================================================================
+
+spring.application.name=backend
+# ── Server ────────────────────────────────────────────────────────────────────
+server.port=8080
+
+# ── Database ──────────────────────────────────────────────────────────────────
+spring.datasource.url=${DB_URL:jdbc:postgresql://localhost:5432/YtAdvisor}
+spring.datasource.username=${DB_USER:postgres}
+spring.datasource.password=${DB_PASSWORD:juniorjain}
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# ── JPA ───────────────────────────────────────────────────────────────────────
+spring.jpa.hibernate.ddl-auto=none
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=false
+
+# ── Flyway ────────────────────────────────────────────────────────────────────
+# spring.flyway.enabled=true
+# spring.flyway.locations=classpath:db/migration
+# spring.jpa.defer-datasource-initialization=true
+# # spring.flyway.baseline-on-migrate=true
+# # spring.flyway.validate-on-migrate=true
+logging.level.org.flywaydb=DEBUG
+
+# ── OAuth2 Google ─────────────────────────────────────────────────────────────
+spring.security.oauth2.client.registration.google.client-id=${GOOGLE_CLIENT_ID:179465564896-5u2ght8c940oaidifiqa5etnbt8th86a.apps.googleusercontent.com}
+spring.security.oauth2.client.registration.google.client-secret=${GOOGLE_CLIENT_SECRET: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}
+spring.security.oauth2.client.registration.google.scope=openid,email,profile
+
+# server.servlet.session.cookie.same-site=none
+server.servlet.session.cookie.secure=false
+server.address=localhost
+spring.security.oauth2.client.registration.google.redirect-uri=http://localhost:8080/login/oauth2/code/google
+
+server.servlet.session.cookie.name=JSESSIONID
+server.servlet.session.cookie.http-only=true
+server.servlet.session.cookie.same-site=lax
+spring.session.store-type=none
+
+# ── App ───────────────────────────────────────────────────────────────────────
+app.jwt-secret=${JWT_SECRET: pqrb3494b903rjrigj024b3nbmdfls394g3gbhvqgi97qhgb3evb0}
+app.jwt-expiry-ms=86400000
+app.python-base-url=${PYTHON_BASE_URL:http://localhost:8000}
+app.frontend-url=${FRONTEND_URL:http://localhost:5173}
+
+# ── YouTube ───────────────────────────────────────────────────────────────────
+youtube.api-key=${YOUTUBE_API_KEY:AIzaSyCZyBCWI4W3HWUWs7llNZTawtKFonIDsk4}
+
+
+// ==============================================================================
+// File: backend/src/test/java/com/YtAdvisor/backend/BackendApplicationTests.java
+// ==============================================================================
+
+package com.YtAdvisor.backend;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class BackendApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
+
+

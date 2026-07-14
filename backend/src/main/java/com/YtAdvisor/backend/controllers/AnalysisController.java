@@ -1,17 +1,19 @@
 package com.YtAdvisor.backend.controllers;
 
+import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.YtAdvisor.backend.dto.AnalysisRequestDto;
 import com.YtAdvisor.backend.entities.User;
 import com.YtAdvisor.backend.repositories.UserRepository;
+import com.YtAdvisor.backend.security.AuthUtil;
 import com.YtAdvisor.backend.services.AnalysisService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/analysis")
-@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class AnalysisController {
 
@@ -33,14 +34,9 @@ public class AnalysisController {
     public ResponseEntity<String> analyse(@Valid @RequestBody AnalysisRequestDto dto) {
         System.out.println("Received analysis request: " + dto);
 
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (!(principal instanceof DefaultOidcUser)) {
-            throw new RuntimeException("Not logged in");
-        }
-
-        String email = ((DefaultOidcUser) principal).getEmail();
-        User user = userRepository.findByEmail(email).orElseThrow();
+        UUID userId = AuthUtil.getCurrentUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
 
         JsonNode result = analysisService.analyse(user.getId(), dto.getVideoIdea());
 

@@ -78,7 +78,8 @@ const LoginPage = () => {
   }, []);
 
   const handleLogin = () => {
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+    const baseUrl = import.meta.env.BACKEND_BASE_URL || '';
+    window.location.href = `${baseUrl}/oauth2/authorization/google`;
   };
 
   return (

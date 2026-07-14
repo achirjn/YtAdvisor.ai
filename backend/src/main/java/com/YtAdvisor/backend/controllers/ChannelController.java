@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.YtAdvisor.backend.security.AuthUtil;
 
 import com.YtAdvisor.backend.dto.ChannelConnectDto;
 import com.YtAdvisor.backend.dto.ChannelStatusResponse;
@@ -36,7 +37,7 @@ public class ChannelController {
     @PostMapping("/connect")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public Map<String, Object> connect(@Valid @RequestBody ChannelConnectDto dto) {
-        UUID userId = UUID.fromString((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        UUID userId = AuthUtil.getCurrentUserId();
 
         Channel channel = channelService.connectChannel(userId, dto.getChannelInput());
 
@@ -52,8 +53,7 @@ public class ChannelController {
 
     @GetMapping("/status")
     public ChannelStatusResponse status() {
-        UUID userId = (UUID) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
+        UUID userId = AuthUtil.getCurrentUserId();
 
         Channel channel = channelRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new ResponseStatusException(
